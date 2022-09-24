@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Shop.Application.Common.Dto;
-using Shop.Application.Common.Interfaces;
+using Chat.Application.Common.Dto;
+using Chat.Application.Common.Interfaces;
 
 namespace Chat.Api.Controllers;
 
@@ -14,7 +14,9 @@ public class MessageController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> PostMessage(AddMessageDto addMessageDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> PostMessage(
+        AddMessageDto addMessageDto,
+        CancellationToken cancellationToken)
     {
         await _messageService.AddAsync(addMessageDto, cancellationToken);
         
