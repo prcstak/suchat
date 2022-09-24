@@ -1,6 +1,6 @@
 ﻿using Shop.Domain;
 
-namespace Shop.Application.Common.Dto;
+namespace Chat.Application.Common.Dto;
 
 public record GetUserDtoVm(string Username, string Id)
 {

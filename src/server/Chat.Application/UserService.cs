@@ -1,11 +1,11 @@
-﻿using Chat.Infrastructure.Common;
+﻿using Chat.Application.Common.Dto;
+using Chat.Application.Common.Exceptions;
+using Chat.Application.Common.Interfaces;
+using Chat.Infrastructure.Common;
 using MongoDB.Driver;
-using Shop.Application.Common.Dto;
-using Shop.Application.Common.Exceptions;
-using Shop.Application.Common.Interfaces;
 using Shop.Domain;
 
-namespace Shop.Application;
+namespace Chat.Application;
 
 public class UserService : IUserService
 {

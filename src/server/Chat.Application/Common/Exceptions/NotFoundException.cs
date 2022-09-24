@@ -1,4 +1,4 @@
-﻿namespace Shop.Application.Common.Exceptions;
+﻿namespace Chat.Application.Common.Exceptions;
 
 public class NotFoundException : Exception
 {

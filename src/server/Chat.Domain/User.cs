@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Shop.Domain;
+namespace Chat.Domain;
 
 public class User
 {

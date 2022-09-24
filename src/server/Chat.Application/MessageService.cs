@@ -1,9 +1,9 @@
-﻿using Chat.Infrastructure.Common;
-using Shop.Application.Common.Dto;
-using Shop.Application.Common.Interfaces;
+﻿using Chat.Application.Common.Dto;
+using Chat.Application.Common.Interfaces;
+using Chat.Infrastructure.Common;
 using Shop.Domain;
 
-namespace Shop.Application;
+namespace Chat.Application;
 
 public class MessageService : IMessageService
 {

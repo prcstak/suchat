@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shop.Application.Common.Interfaces;
+﻿using Chat.Application.Common.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Shop.Application;
+namespace Chat.Application;
 
 public static class ConfigureServices
 {

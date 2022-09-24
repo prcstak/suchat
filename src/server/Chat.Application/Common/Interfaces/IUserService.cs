@@ -1,7 +1,7 @@
-﻿using Shop.Application.Common.Dto;
+﻿using Chat.Application.Common.Dto;
 using Shop.Domain;
 
-namespace Shop.Application.Common.Interfaces;
+namespace Chat.Application.Common.Interfaces;
 
 public interface IUserService
 {
