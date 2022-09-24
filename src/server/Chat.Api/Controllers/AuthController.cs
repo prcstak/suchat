@@ -1,4 +1,4 @@
-﻿using Shop.Application.Common.Interfaces;
+﻿using Chat.Application.Common.Interfaces;
 
 namespace Chat.Api.Controllers;
 
