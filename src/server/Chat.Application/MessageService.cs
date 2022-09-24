@@ -1,7 +1,6 @@
 ﻿using Chat.Application.Common.Dto;
 using Chat.Application.Common.Interfaces;
 using Chat.Infrastructure.Common;
-using Shop.Domain;
 
 namespace Chat.Application;
 
@@ -14,17 +13,13 @@ public class MessageService : IMessageService
         _context = context;
     }
 
-    public async Task AddAsync(AddMessageDto postMessageDto, CancellationToken cancellationToken)
+    public Task AddAsync(AddMessageDto postMessageDto, CancellationToken cancellationToken)
     {
-        await _context.Message.InsertOneAsync(new Message
-        {
-            Body = postMessageDto.Body,
-            Created = default,
-        }, cancellationToken: cancellationToken);
+        throw new NotImplementedException();
     }
 
     public Task GetMessageHistory(int offset, int limit, int groupId, int userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException(); // TODO
+        throw new NotImplementedException();
     }
 }

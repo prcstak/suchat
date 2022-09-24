@@ -1,4 +1,7 @@
-﻿using Chat.Infrastructure.Common;
+﻿using Chat.Domain;
+using Chat.Infrastructure.Common;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,8 +13,15 @@ public static class ConfigureServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddSingleton<IMongoDbConfiguration, MongoDbConfiguration>();
-        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        services.AddDbContext<ApplicationDbContext>(options => 
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        
+        services.AddScoped<IApplicationDbContext>(provider => 
+            provider.GetService<ApplicationDbContext>()!);
+        
+        services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
         
         return services;
     }

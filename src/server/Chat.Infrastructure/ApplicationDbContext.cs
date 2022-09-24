@@ -1,18 +1,24 @@
-﻿using Chat.Infrastructure.Common;
-using MongoDB.Driver;
-using Shop.Domain;
+﻿using Chat.Domain;
+using Chat.Infrastructure.Common;
+using Chat.Infrastructure.EntityTypeConfigurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infrastructure;
 
-public class ApplicationDbContext : IApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
 {
-    private readonly IMongoDatabase _db;
-    public IMongoCollection<User> User => _db.GetCollection<User>("User");
-    public IMongoCollection<Message> Message => _db.GetCollection<Message>("Message");
+    public DbSet<User> Users { get; set; }
+    public DbSet<Message> Messages { get; set; }
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+        : base(options) { }
     
-    public ApplicationDbContext(IMongoDbConfiguration config)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var client = new MongoClient(config.ConnectionString);
-        _db = client.GetDatabase(config.Database);
+        modelBuilder.ApplyConfiguration(new MessageEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+        
+        base.OnModelCreating(modelBuilder);
     }
 }

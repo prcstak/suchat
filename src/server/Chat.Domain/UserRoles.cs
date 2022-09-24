@@ -1,6 +1,8 @@
 ﻿namespace Chat.Domain;
 
-public class UserRoles
+public enum UserRoles
 {
-    
+    User,
+    Support,
+    Admin
 }

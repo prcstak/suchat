@@ -1,13 +1,8 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace Chat.Domain;
+﻿namespace Chat.Domain;
 
 public class Message
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public Guid Id { get; set; }
     
     public string GroupId { get; set; }
     

@@ -1,10 +1,11 @@
-﻿using MongoDB.Driver;
-using Shop.Domain;
+﻿
+using Chat.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infrastructure.Common;
 
 public interface IApplicationDbContext
 {
-    IMongoCollection<User> User { get; }
-    IMongoCollection<Message> Message { get; }
+    DbSet<User> Users { get; set; }
+    DbSet<Message> Messages { get; set; }
 }
