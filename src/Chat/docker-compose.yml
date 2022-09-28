@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  chat-server:
+    build: 
+      context: ./server
+      dockerfile: ./Chat.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8000:80"
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "Chat"
