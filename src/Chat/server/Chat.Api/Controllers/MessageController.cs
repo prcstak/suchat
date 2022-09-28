@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Chat.Application.Common.Dto;
 using Chat.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Api.Controllers;
 
+[Authorize(AuthenticationSchemes=JwtBearerDefaults.AuthenticationScheme)]
 public class MessageController : BaseController
 {
     private readonly IMessageService _messageService;
@@ -24,18 +27,27 @@ public class MessageController : BaseController
         CancellationToken cancellationToken)
     {
         await _messageService.AddAsync(addMessageDto, cancellationToken);
+        _messageProducer.SendMessage(addMessageDto);
         
         return Ok();
     }
 
     [HttpPost]
-    [Route("TEST")]
-    public async Task<IActionResult> TestMq(
-        AddMessageDto addMessageDto,
+    [Route("history")]
+    public async Task<IActionResult> GetHistory(
+        int offset,
+        int limit,
+        Guid chatId,
+        string userId,
         CancellationToken cancellationToken)
     {
-        _messageProducer.SendMessage(addMessageDto);
+        var messages = await _messageService.GetMessageHistory(
+            offset,
+            limit, 
+            chatId, 
+            userId, 
+            cancellationToken);
         
-        return Ok();
+        return Ok(messages);
     }
 }

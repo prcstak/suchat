@@ -15,8 +15,18 @@ public class MessageProducer : IMessageProducer
         };
         var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
-        var json = JsonSerializer.Serialize(message);
-        var body = Encoding.UTF8.GetBytes(json);
-        channel.BasicPublish(exchange: "", routingKey: "application.chat", body: body);
+        channel.QueueDeclare(queue: "chat",
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+
+        var jsonMessage = JsonSerializer.Serialize(message);
+        var body = Encoding.UTF8.GetBytes(jsonMessage);
+
+        channel.BasicPublish(exchange: "",
+            routingKey: "chat",
+            basicProperties: null,
+            body: body);
     }
 }

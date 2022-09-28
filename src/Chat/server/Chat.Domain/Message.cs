@@ -4,8 +4,6 @@ public class Message
 {
     public Guid Id { get; set; }
     
-    public Guid GroupId { get; set; }
-    
     public string Body { get; set; }
     
     public DateTime Created { get; set; }

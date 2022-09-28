@@ -1,6 +1,8 @@
 ﻿using Chat.Application.Common.Dto;
 using Chat.Application.Common.Interfaces;
+using Chat.Domain;
 using Chat.Infrastructure.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Application;
 
@@ -13,13 +15,31 @@ public class MessageService : IMessageService
         _context = context;
     }
 
-    public Task AddAsync(AddMessageDto postMessageDto, CancellationToken cancellationToken)
+    public async Task<Message> AddAsync(AddMessageDto addMessageDto, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var message = new Message
+        {
+            Body = addMessageDto.Body,
+            Created = DateTime.Now,
+            UserId = addMessageDto.UserId
+        };
+
+        await _context.Messages.AddAsync(message, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return message;
     }
 
-    public Task GetMessageHistory(int offset, int limit, int groupId, int userId, CancellationToken cancellationToken)
+    public async Task<GetMessagesList> GetMessageHistory(int offset, int limit, Guid groupId, string userId,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var messages = await _context.Messages
+            .AsNoTracking()
+            .Include(i => i.User)
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync(cancellationToken);
+
+        return GetMessagesList.MapFrom(messages);
     }
 }

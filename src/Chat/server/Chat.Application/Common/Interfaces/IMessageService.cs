@@ -1,9 +1,11 @@
 ﻿using Chat.Application.Common.Dto;
+using Chat.Domain;
 
 namespace Chat.Application.Common.Interfaces;
 
 public interface IMessageService
 {
-    Task AddAsync(AddMessageDto postMessageDto, CancellationToken cancellationToken);
-    Task GetMessageHistory(int offset, int limit, int groupId, int userId, CancellationToken cancellationToken);
+    Task<Message> AddAsync(AddMessageDto postMessageDto, CancellationToken cancellationToken);
+    Task<GetMessagesList> GetMessageHistory(int offset, int limit, Guid chatId, string userId,
+        CancellationToken cancellationToken);
 }

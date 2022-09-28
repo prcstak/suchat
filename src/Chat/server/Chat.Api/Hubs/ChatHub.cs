@@ -1,21 +1,23 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Chat.Api.Producer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Chat.Api.Hubs;
 
+[Authorize(AuthenticationSchemes=JwtBearerDefaults.AuthenticationScheme)]
 public class ChatHub : Hub
 {
-    public async Task SendMessage(string user, string message)
+    private readonly IMessageProducer _producer;
+
+    public ChatHub(IMessageProducer producer)
     {
-        await Clients.All.SendAsync("ReceiveMessage", user, message);   
+        _producer = producer;
     }
     
-    public async Task JoinRoom(string roomName)
+    public async Task SendMessage(string userId, string message)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-    }
-
-    public async Task LeaveRoom(string roomName)
-    {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
+        await Clients.All.SendAsync("ReceiveMessage", userId, message);
+        _producer.SendMessage(new { UserId = userId, Message = message });
     }
 }
