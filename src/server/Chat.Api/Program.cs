@@ -1,4 +1,6 @@
 using System.Text;
+using Chat.Api.Hubs;
+using Chat.Api.Producer;
 using Chat.Infrastructure;
 using Chat.Application;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -58,5 +62,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/Chat");
 
 app.Run();
