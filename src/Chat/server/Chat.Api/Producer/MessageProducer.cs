@@ -17,6 +17,6 @@ public class MessageProducer : IMessageProducer
         using var channel = connection.CreateModel();
         var json = JsonSerializer.Serialize(message);
         var body = Encoding.UTF8.GetBytes(json);
-        channel.BasicPublish(exchange: "application", routingKey: "chat", body: body);
+        channel.BasicPublish(exchange: "", routingKey: "application.chat", body: body);
     }
 }
