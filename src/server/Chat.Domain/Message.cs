@@ -4,7 +4,7 @@ public class Message
 {
     public Guid Id { get; set; }
     
-    public string GroupId { get; set; }
+    public Guid GroupId { get; set; }
     
     public string Body { get; set; }
     

@@ -1,13 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Chat.BackgroundService;
+using Chat.Infrastructure;
 
-namespace Chat.BackgroundService;
+var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .Build();
 
-public static class ConfigureServices
-{
-    public static IServiceCollection AddConsumerMq(this IServiceCollection services)
+var host = Host
+    .CreateDefaultBuilder(args)
+    .ConfigureServices((_, services) =>
     {
+        services.AddInfrastructure(config);
         services.AddHostedService<ConsumerHostedService>();
-        
-        return services;
-    }
-}
+    })
+    .Build();
+
+await host.RunAsync();

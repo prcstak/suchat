@@ -1,3 +1,3 @@
 ﻿namespace Chat.Application.Common.Dto;
 
-public record AddMessageDto(string Body, string Id);
+public record AddMessageDto(string UserId, Guid GroupId, string Body);
