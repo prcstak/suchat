@@ -2,7 +2,7 @@ import React from "react";
 
 const Message = ({isMine, message, timestamp}) => {
     return (
-        isMine? <div style={{ backgroundColor: "lightblue", borderRadius: 15, paddingLeft: 10, marginLeft:"40%", margin: 10}}>
+        isMine? <div style={{ backgroundColor: "lightblue", borderRadius: 15, paddingLeft: 10, margin: "2% 2% 5% 40%"}}>
             <div className="timestamp">
                 {timestamp}
             </div>
@@ -12,7 +12,7 @@ const Message = ({isMine, message, timestamp}) => {
                 </div>
             </div>
         </div> :
-            <div style={{backgroundColor: "wheat", borderRadius: 15, paddingLeft: 10, marginRight:"40%", margin: 10}}>
+            <div style={{backgroundColor: "wheat", borderRadius: 15, paddingLeft: 10,  margin: "2% 40% 2% 2%"}}>
                 <div className="timestamp">
                     {timestamp}
                 </div>
