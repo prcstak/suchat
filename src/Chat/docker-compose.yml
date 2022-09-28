@@ -9,6 +9,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8000:80"
+  chat-client:
+    build: 
+      context: ./client
+      dockerfile: ./Dockerfile
+    environment:
+      - HOST=0.0.0.0
+    ports:
+      - "5173:5173"
   db:
     image: postgres
     restart: always
@@ -18,3 +26,8 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "admin"
       POSTGRES_DB: "Chat"
+  rmq:
+    image: rabbitmq:latest
+    ports:
+      - "15672:15672"
+      - "5672:5672"
