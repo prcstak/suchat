@@ -33,9 +33,12 @@ function Chat(props) {
                 .then(result => {
                     console.log('Connected!');
 
-                    connection.on('ReceiveMessage', (userR, message) => {
+                    connection.on('ReceiveMessage', (u, m) => {
                         const updatedChat = [...latestChat.current];
-                        updatedChat.push({message: message, timestamp: "12:30", isMine: userR == user}); //TODO:isMine: userId == myId
+                        console.log("\n");
+                        console.log("receive "+u);
+                        console.log("state "+user);
+                        updatedChat.push({message: m, timestamp: "12:30", isMine: user===u, user: u}); //TODO:isMine: userId == myId
                         setChat(updatedChat);
                     });
                 })
@@ -43,12 +46,23 @@ function Chat(props) {
         }
     }, [connection]);
 
-    const sendMessage = async (user, message) => {
+    const sendMessage = async (u, m) => {
+        connection.on('ReceiveMessage', (u, m) => {
+            const updatedChat = [...latestChat.current];
+            console.log("\n");
+            console.log("receive "+u);
+            console.log("state "+user);
+            updatedChat.push({message: m, timestamp: "12:30", isMine: user===u, user: u}); //TODO:isMine: userId == myId
+            setChat(updatedChat);
+        });
         const chatMessage = {
-            user: user,
-            message: message
+            user: u,
+            message: m
         };
-        await connection.send('SendMessage', chatMessage.message, chatMessage.message + "");
+        console.log("send us "+chatMessage.user);
+        console.log("send mess "+chatMessage.message);
+        console.log("send state "+user);
+        await connection.send('SendMessage', chatMessage.user, chatMessage.message);
     }
 
     return (<div>
@@ -58,10 +72,10 @@ function Chat(props) {
                 <Col xs={6}>
                     <Card style={{padding: 0, height: "100%"}}>
                         {
-                            user == '' ?
+                            user === '' ?
                                 <div><input onChange={(e)=>setInput(e.target.value)}
                                             type={"text"}/>
-                                    <Button onClick={()=>{setUser(input)}}>Join</Button>
+                                    <Button onClick={()=>setUser(input)}>Join</Button>
                                 </div> :
                                 <Col style={{height: "100px", position: "relative"}}>
                                     <div style={{
@@ -73,7 +87,7 @@ function Chat(props) {
                                     }}>
                                         {
                                             chat.map((mes, index) => {
-                                                return <Message key={index} message={mes.message} isMine={mes.isMine}
+                                                return <Message key={index} message={mes.message} isMine={mes.isMine} user={mes.user}
                                                                 timestamp={mes.timestamp}/>
                                             })
                                         }
