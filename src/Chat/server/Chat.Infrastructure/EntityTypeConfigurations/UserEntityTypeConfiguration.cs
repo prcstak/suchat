@@ -8,6 +8,5 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasMany(e => e.Messages).WithOne(e => e.User);
     }
 }

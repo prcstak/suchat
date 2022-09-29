@@ -58,7 +58,7 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 {
                     Body = message.Body,
                     Created = DateTime.Now,
-                    UserId = message.UserId
+                    Username = message.Username
                 }, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
             }

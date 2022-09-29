@@ -21,7 +21,7 @@ public class MessageService : IMessageService
         {
             Body = addMessageDto.Body,
             Created = DateTime.Now,
-            UserId = addMessageDto.UserId
+            Username = addMessageDto.Username
         };
 
         await _context.Messages.AddAsync(message, cancellationToken);
@@ -30,12 +30,11 @@ public class MessageService : IMessageService
         return message;
     }
 
-    public async Task<GetMessagesList> GetMessageHistory(int offset, int limit, Guid groupId, string userId,
+    public async Task<GetMessagesList> GetMessageHistory(int offset, int limit,
         CancellationToken cancellationToken)
     {
         var messages = await _context.Messages
             .AsNoTracking()
-            .Include(i => i.User)
             .Skip(offset)
             .Take(limit)
             .ToListAsync(cancellationToken);

@@ -2,12 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Chat.Application.Common.Dto;
 using Chat.Application.Common.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Chat.Api.Controllers;
 
-[Authorize(AuthenticationSchemes=JwtBearerDefaults.AuthenticationScheme)]
 public class MessageController : BaseController
 {
     private readonly IMessageService _messageService;
@@ -37,15 +34,11 @@ public class MessageController : BaseController
     public async Task<IActionResult> GetHistory(
         int offset,
         int limit,
-        Guid chatId,
-        string userId,
         CancellationToken cancellationToken)
     {
         var messages = await _messageService.GetMessageHistory(
             offset,
             limit, 
-            chatId, 
-            userId, 
             cancellationToken);
         
         return Ok(messages);
