@@ -7,7 +7,7 @@ import {Context} from "../main.jsx";
 const ProtectedRoutes = () => {
     const {userStore} = useContext(Context);
     return (
-        userStore.isAuthenticated ? <Outlet/> : <Login/>
+        userStore.isAuthenticated ? <Outlet/> : <Chat/>
     );
 };
 

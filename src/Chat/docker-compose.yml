@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  app-tier:
+    driver: bridge
+
 services:
   chat-server:
     build: 
@@ -9,6 +13,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8000:80"
+    networks:
+      - app-tier
   chat-client:
     build: 
       context: ./client
@@ -17,6 +23,16 @@ services:
       - HOST=0.0.0.0
     ports:
       - "5173:5173"
+    networks:
+      - app-tier
+  chat-consumer:
+    build: 
+      context: ./server
+      dockerfile: ./Chat.BackgroundService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - app-tier
   db:
     image: postgres
     restart: always
@@ -26,8 +42,14 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "admin"
       POSTGRES_DB: "Chat"
-  rmq:
-    image: rabbitmq:latest
+    networks:
+      - app-tier
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
     ports:
-      - "15672:15672"
-      - "5672:5672"
+        - 5672:5672
+        - 15672:15672
+    networks:
+      - app-tier

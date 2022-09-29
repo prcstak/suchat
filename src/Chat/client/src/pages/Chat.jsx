@@ -5,10 +5,12 @@ import {HttpTransportType, HubConnectionBuilder} from "@microsoft/signalr";
 
 function Chat(props) {
 
-    const [ connection, setConnection ] = useState(null);
-    const [ chat, setChat ] = useState([]);
+    const [connection, setConnection] = useState(null);
+    const [chat, setChat] = useState([]);
     const [message, setMessage] = useState("");
     const latestChat = useRef(null);
+    const [user, setUser] = useState('');
+    const [input, setInput] = useState('');
 
     latestChat.current = chat;
 
@@ -31,9 +33,9 @@ function Chat(props) {
                 .then(result => {
                     console.log('Connected!');
 
-                    connection.on('ReceiveMessage',(userId, message) => {
+                    connection.on('ReceiveMessage', (userR, message) => {
                         const updatedChat = [...latestChat.current];
-                        updatedChat.push({message: message, timestamp: "12:30", isMine: userId==0}); //TODO:isMine: userId == myId
+                        updatedChat.push({message: message, timestamp: "12:30", isMine: userR == user}); //TODO:isMine: userId == myId
                         setChat(updatedChat);
                     });
                 })
@@ -46,7 +48,7 @@ function Chat(props) {
             user: user,
             message: message
         };
-        await connection.send('SendMessage', chatMessage.message, chatMessage.message+"");
+        await connection.send('SendMessage', chatMessage.message, chatMessage.message + "");
     }
 
     return (<div>
@@ -55,29 +57,43 @@ function Chat(props) {
                 <Col/>
                 <Col xs={6}>
                     <Card style={{padding: 0, height: "100%"}}>
-
-                        <Col style={{height: "100px", position: "relative"}}>
-                            <div style={{position: "absolute", right: 0, bottom: 0, paddingBottom: 70, width: "100%"}}>
-                                {
-                                    chat.map((mes, index) => {
-                                        return <Message key={index} message={mes.message} isMine={mes.isMine}
-                                                        timestamp={mes.timestamp}/>
-                                    })
-                                }
-                            </div>
-                                <InputGroup style={{position: "absolute", bottom: 0}} className="mb-3">
-                                    <Form.Control
-                                        onChange={(e)=>setMessage(e.target.value)}
-                                        placeholder="Message"
-                                        aria-label="Message"
-                                        aria-describedby="basic-addon2"
-                                    />
-                                    <Button variant="outline-secondary" id="button-addon2"
-                                            onClick={(e)=>{sendMessage("", message)}}>
-                                        Send
-                                    </Button>
-                                </InputGroup>
-                        </Col>
+                        {
+                            user == '' ?
+                                <div><input onChange={(e)=>setInput(e.target.value)}
+                                            type={"text"}/>
+                                    <Button onClick={()=>{setUser(input)}}>Join</Button>
+                                </div> :
+                                <Col style={{height: "100px", position: "relative"}}>
+                                    <div style={{
+                                        position: "absolute",
+                                        right: 0,
+                                        bottom: 0,
+                                        paddingBottom: 70,
+                                        width: "100%"
+                                    }}>
+                                        {
+                                            chat.map((mes, index) => {
+                                                return <Message key={index} message={mes.message} isMine={mes.isMine}
+                                                                timestamp={mes.timestamp}/>
+                                            })
+                                        }
+                                    </div>
+                                    <InputGroup style={{position: "absolute", bottom: 0}} className="mb-3">
+                                        <Form.Control
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            placeholder="Message"
+                                            aria-label="Message"
+                                            aria-describedby="basic-addon2"
+                                        />
+                                        <Button variant="outline-secondary" id="button-addon2"
+                                                onClick={(e) => {
+                                                    sendMessage(user, message)
+                                                }}>
+                                            Send
+                                        </Button>
+                                    </InputGroup>
+                                </Col>
+                        }
                     </Card>
                 </Col>
                 <Col/>
