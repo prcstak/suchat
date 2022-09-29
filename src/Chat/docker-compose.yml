@@ -5,8 +5,9 @@ networks:
     driver: bridge
 
 services:
+
   chat-server:
-    build: 
+    build:
       context: ./server
       dockerfile: ./Chat.Api/Dockerfile
     environment:
@@ -15,8 +16,9 @@ services:
       - "8000:80"
     networks:
       - app-tier
+
   chat-client:
-    build: 
+    build:
       context: ./client
       dockerfile: ./Dockerfile
     environment:
@@ -25,8 +27,9 @@ services:
       - "5173:5173"
     networks:
       - app-tier
+
   chat-consumer:
-    build: 
+    build:
       context: ./server
       dockerfile: ./Chat.BackgroundService/Dockerfile
     environment:
@@ -49,7 +52,7 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
     networks:
       - app-tier
