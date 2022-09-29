@@ -6,6 +6,6 @@ namespace Chat.Application.Common.Interfaces;
 public interface IMessageService
 {
     Task<Message> AddAsync(AddMessageDto postMessageDto, CancellationToken cancellationToken);
-    Task<GetMessagesList> GetMessageHistory(int offset, int limit, Guid chatId, string userId,
+    Task<GetMessagesList> GetMessageHistory(int offset, int limit,
         CancellationToken cancellationToken);
 }

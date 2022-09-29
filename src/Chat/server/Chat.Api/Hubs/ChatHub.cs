@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Chat.Api.Hubs;
 
-[Authorize(AuthenticationSchemes=JwtBearerDefaults.AuthenticationScheme)]
+
 public class ChatHub : Hub
 {
     private readonly IMessageProducer _producer;

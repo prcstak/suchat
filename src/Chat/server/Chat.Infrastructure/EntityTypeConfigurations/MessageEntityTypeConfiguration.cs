@@ -12,7 +12,6 @@ public class MessageEntityTypeConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(e => e.Id).ValueGeneratedOnAdd();
         builder.Property(e => e.Body).IsRequired();
         builder.Property(e => e.Created).IsRequired();
-        builder.HasOne(e => e.User);
         builder.Property(e => e.Created).HasColumnType("date");
     }
 }
