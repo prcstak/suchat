@@ -23,7 +23,6 @@ public class MessageController : BaseController
         AddMessageDto addMessageDto,
         CancellationToken cancellationToken)
     {
-        await _messageService.AddAsync(addMessageDto, cancellationToken);
         _messageProducer.SendMessage(addMessageDto);
         
         return Ok();
