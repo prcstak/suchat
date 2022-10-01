@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import Chat from "./pages/Chat.jsx";
+import React from 'react';
 import {Route, Routes} from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Registration from "./pages/Registration.jsx";

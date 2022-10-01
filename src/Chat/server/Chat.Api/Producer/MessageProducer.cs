@@ -9,9 +9,9 @@ public class MessageProducer : IMessageProducer
     public void SendMessage<T>(T message)
     {
         // REFACTOR: apply external config
-        var factory = new ConnectionFactory 
-        {         
-            HostName = "localhost",
+        var factory = new ConnectionFactory
+        {
+            HostName = "rabbitmq",
         };
         var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();

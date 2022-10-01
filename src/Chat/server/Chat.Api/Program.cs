@@ -22,7 +22,7 @@ builder.Services
     {
         var secretBytes = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]);
         var key = new SymmetricSecurityKey(secretBytes);
-        
+
         config.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidIssuer = builder.Configuration["JWT:Issuer"],
@@ -37,9 +37,10 @@ builder.Services.AddCors(options =>
         policyBuilder =>
         {
             policyBuilder
-                .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .SetIsOriginAllowed(_ => true);
         });
 });
 

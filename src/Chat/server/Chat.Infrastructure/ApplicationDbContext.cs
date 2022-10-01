@@ -11,8 +11,11 @@ public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Message> Messages { get; set; }
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
-        : base(options) { }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+        Database.EnsureCreated();
+    }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

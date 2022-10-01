@@ -29,7 +29,7 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         // REFACTOR: apply external config
         _connectionFactory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "rabbitmq",
         };
         
         _connection = _connectionFactory.CreateConnection();

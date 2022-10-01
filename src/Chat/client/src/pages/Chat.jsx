@@ -16,7 +16,7 @@ function Chat(props) {
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl('https://localhost:7225/Chat', {
+            .withUrl('http://server:8000/Chat', {
                 withCredentials: false,
                 skipNegotiation: true,
                 transport: HttpTransportType.WebSockets
