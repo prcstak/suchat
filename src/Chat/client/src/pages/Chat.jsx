@@ -16,7 +16,7 @@ function Chat(props) {
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl('http://server:8000/Chat', {
+            .withUrl('http://localhost:8000/Chat', {
                 withCredentials: false,
                 skipNegotiation: true,
                 transport: HttpTransportType.WebSockets
@@ -25,6 +25,24 @@ function Chat(props) {
             .build();
 
         setConnection(newConnection);
+
+        const updatedChat = [...latestChat.current];
+        fetch('http://localhost:8000/api/Message/history?offset=0&limit=100', {
+            method: 'POST',
+        })
+            .then((json) => json.json())
+            .then((res) => {
+                console.log(res['messages']);
+                res['messages'].map((mes, index) => {
+                    updatedChat.push({
+                        message: mes.body,
+                        timestamp: mes.created,
+                        isMine: mes.username == user,
+                        user: mes.username
+                    });
+                    setChat(updatedChat);
+                });
+            });
     }, []);
 
     useEffect(() => {
@@ -36,9 +54,9 @@ function Chat(props) {
                     connection.on('ReceiveMessage', (u, m) => {
                         const updatedChat = [...latestChat.current];
                         console.log("\n");
-                        console.log("receive "+u);
-                        console.log("state "+user);
-                        updatedChat.push({message: m, timestamp: "12:30", isMine: user===u, user: u}); //TODO:isMine: userId == myId
+                        console.log("receive " + u);
+                        console.log("state " + user);
+                        updatedChat.push({message: m, timestamp: "12:30", isMine: user === u, user: u}); //TODO:isMine: userId == myId
                         setChat(updatedChat);
                     });
                 })
@@ -50,18 +68,18 @@ function Chat(props) {
         connection.on('ReceiveMessage', (u, m) => {
             const updatedChat = [...latestChat.current];
             console.log("\n");
-            console.log("receive "+u);
-            console.log("state "+user);
-            updatedChat.push({message: m, timestamp: "12:30", isMine: user===u, user: u}); //TODO:isMine: userId == myId
+            console.log("receive " + u);
+            console.log("state " + user);
+            updatedChat.push({message: m, timestamp: "12:30", isMine: user === u, user: u}); //TODO:isMine: userId == myId
             setChat(updatedChat);
         });
         const chatMessage = {
             user: u,
             message: m
         };
-        console.log("send us "+chatMessage.user);
-        console.log("send mess "+chatMessage.message);
-        console.log("send state "+user);
+        console.log("send us " + chatMessage.user);
+        console.log("send mess " + chatMessage.message);
+        console.log("send state " + user);
         await connection.send('SendMessage', chatMessage.user, chatMessage.message);
     }
 
@@ -73,9 +91,9 @@ function Chat(props) {
                     <Card style={{padding: 0, height: "100%"}}>
                         {
                             user === '' ?
-                                <div><input onChange={(e)=>setInput(e.target.value)}
+                                <div><input onChange={(e) => setInput(e.target.value)}
                                             type={"text"}/>
-                                    <Button onClick={()=>setUser(input)}>Join</Button>
+                                    <Button onClick={() => setUser(input)}>Join</Button>
                                 </div> :
                                 <Col style={{height: "100px", position: "relative"}}>
                                     <div style={{
@@ -87,7 +105,8 @@ function Chat(props) {
                                     }}>
                                         {
                                             chat.map((mes, index) => {
-                                                return <Message key={index} message={mes.message} isMine={mes.isMine} user={mes.user}
+                                                return <Message key={index} message={mes.message} isMine={mes.isMine}
+                                                                user={mes.user}
                                                                 timestamp={mes.timestamp}/>
                                             })
                                         }

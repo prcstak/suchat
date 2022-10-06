@@ -35,7 +35,7 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         _connection = _connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
         _channel.QueueDeclare(queue: "chat",
-            durable: false,
+            durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: null);
@@ -67,12 +67,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 _logger.LogWarning("{name}Exception: " + exception.Message, "ARG0");
             }
         };
-        
-        _channel.BasicConsume(queue: "chat",
-            autoAck: true,
-            consumer: consumer);
 
-        _channel.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
+        _channel.BasicConsume(queue: QueueName, autoAck: true, consumer: consumer);
 
         await Task.CompletedTask;
     }
