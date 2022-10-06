@@ -25,14 +25,15 @@ function Chat(props) {
             .build();
 
         setConnection(newConnection);
+    }, []);
 
+    useEffect(()=>{
         const updatedChat = [...latestChat.current];
         fetch('http://localhost:8000/api/Message/history?offset=0&limit=100', {
             method: 'POST',
         })
             .then((json) => json.json())
             .then((res) => {
-                console.log(res['messages']);
                 res['messages'].map((mes, index) => {
                     updatedChat.push({
                         message: mes.body,
@@ -43,7 +44,7 @@ function Chat(props) {
                     setChat(updatedChat);
                 });
             });
-    }, []);
+    }, [user])
 
     useEffect(() => {
         if (connection) {
@@ -51,12 +52,9 @@ function Chat(props) {
                 .then(result => {
                     console.log('Connected!');
 
-                    connection.on('ReceiveMessage', (u, m) => {
+                    connection.on('ReceiveMessage', (u, m, t) => {
                         const updatedChat = [...latestChat.current];
-                        console.log("\n");
-                        console.log("receive " + u);
-                        console.log("state " + user);
-                        updatedChat.push({message: m, timestamp: "12:30", isMine: user === u, user: u}); //TODO:isMine: userId == myId
+                        updatedChat.push({message: m, timestamp: t, isMine: user === u, user: u});
                         setChat(updatedChat);
                     });
                 })
@@ -65,21 +63,15 @@ function Chat(props) {
     }, [connection]);
 
     const sendMessage = async (u, m) => {
-        connection.on('ReceiveMessage', (u, m) => {
+        connection.on('ReceiveMessage', (u, m, t) => {
             const updatedChat = [...latestChat.current];
-            console.log("\n");
-            console.log("receive " + u);
-            console.log("state " + user);
-            updatedChat.push({message: m, timestamp: "12:30", isMine: user === u, user: u}); //TODO:isMine: userId == myId
+            updatedChat.push({message: m, timestamp: t, isMine: user === u, user: u});
             setChat(updatedChat);
         });
         const chatMessage = {
             user: u,
             message: m
         };
-        console.log("send us " + chatMessage.user);
-        console.log("send mess " + chatMessage.message);
-        console.log("send state " + user);
         await connection.send('SendMessage', chatMessage.user, chatMessage.message);
     }
 
