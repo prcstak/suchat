@@ -35,7 +35,7 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         _connection = _connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
         _channel.QueueDeclare(queue: "chat",
-            durable: true,
+            durable: false,
             exclusive: false,
             autoDelete: false,
             arguments: null);
