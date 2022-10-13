@@ -1,7 +1,7 @@
-﻿using Chat.Application.Common.Dto;
+﻿using Chat.Common.Dto;
 using Chat.Domain;
 
-namespace Chat.Application.Common.Interfaces;
+namespace Chat.Application.Interfaces;
 
 public interface IMessageService
 {

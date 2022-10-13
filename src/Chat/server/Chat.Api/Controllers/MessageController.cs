@@ -1,7 +1,8 @@
 ﻿using Chat.Api.Producer;
+using Chat.Application;
+using Chat.Application.Interfaces;
+using Chat.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Chat.Application.Common.Dto;
-using Chat.Application.Common.Interfaces;
 
 namespace Chat.Api.Controllers;
 

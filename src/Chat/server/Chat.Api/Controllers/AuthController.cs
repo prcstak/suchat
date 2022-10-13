@@ -2,8 +2,6 @@
 using System.Security.Claims;
 using System.Text;
 using Chat.Api.Models;
-using Chat.Application.Common.Dto;
-using Chat.Application.Common.Interfaces;
 using Chat.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

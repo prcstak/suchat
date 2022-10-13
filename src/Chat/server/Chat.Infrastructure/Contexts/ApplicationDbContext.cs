@@ -1,10 +1,10 @@
 ﻿using Chat.Domain;
-using Chat.Infrastructure.Common;
 using Chat.Infrastructure.EntityTypeConfigurations;
+using Chat.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.Infrastructure;
+namespace Chat.Infrastructure.Contexts;
 
 public class ApplicationDbContext : IdentityDbContext, IApplicationDbContext
 {

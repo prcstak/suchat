@@ -1,4 +1,5 @@
-﻿using Chat.BackgroundService;
+﻿using Chat.Application;
+using Chat.BackgroundService;
 using Chat.Infrastructure;
 
 var config = new ConfigurationBuilder()
@@ -9,6 +10,7 @@ var host = Host
     .CreateDefaultBuilder(args)
     .ConfigureServices((_, services) =>
     {
+        services.AddApplication();
         services.AddInfrastructure(config);
         services.AddHostedService<ConsumerHostedService>();
     })

@@ -1,4 +1,4 @@
-﻿namespace Chat.Application.Common.Exceptions;
+﻿namespace Chat.Common.Exceptions;
 
 public class AlreadyExist : Exception
 {

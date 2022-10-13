@@ -1,8 +1,7 @@
-﻿
-using Chat.Domain;
+﻿using Chat.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.Infrastructure.Common;
+namespace Chat.Infrastructure.Interfaces;
 
 public interface IApplicationDbContext
 {
