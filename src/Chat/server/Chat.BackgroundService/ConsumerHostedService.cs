@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
-using Chat.Application.Common.Dto;
-using Chat.Domain;
-using Chat.Infrastructure.Common;
+using Chat.Application;
+using Chat.Application.Interfaces;
+using Chat.Common.Dto;
+using Chat.Infrastructure;
+using Chat.Infrastructure.Interfaces;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -14,14 +16,17 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     private ConnectionFactory _connectionFactory;
     private const string QueueName = "chat";
     private ILogger<ConsumerHostedService> _logger;
+    private readonly IMessageService _messageService;
     private IApplicationDbContext _context;
 
     public ConsumerHostedService(
         IApplicationDbContext context,
-        ILogger<ConsumerHostedService> logger)
+        ILogger<ConsumerHostedService> logger,
+        IMessageService messageService)
     {
         _context = context;
         _logger = logger;
+        _messageService = messageService;
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -54,17 +59,13 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
             {
                 var body = ea.Body.ToArray();
                 var message = JsonSerializer.Deserialize<AddMessageDto>(body);
-                await _context.Messages.AddAsync(new Message
-                {
-                    Body = message.Body,
-                    Created = DateTime.Now,
-                    Username = message.Username
-                }, cancellationToken);
-                await _context.SaveChangesAsync(cancellationToken);
+                await _messageService.AddAsync(
+                    new AddMessageDto(message.Username, message.Body),
+                    cancellationToken);
             }
             catch (Exception exception)
             {
-                _logger.LogWarning("{name}Exception: " + exception.Message, "ARG0");
+                _logger.LogWarning("Exception: " + exception.Message);
             }
         };
 

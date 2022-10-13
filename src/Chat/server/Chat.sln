@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.Application", "Chat.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.BackgroundService", "Chat.BackgroundService\Chat.BackgroundService.csproj", "{AD87C0EE-E2E2-40E9-AEA5-C5A0C7D894C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.Common", "Chat.Common\Chat.Common.csproj", "{FE37F09C-D371-433F-AE27-6E206E61342A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{AD87C0EE-E2E2-40E9-AEA5-C5A0C7D894C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD87C0EE-E2E2-40E9-AEA5-C5A0C7D894C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD87C0EE-E2E2-40E9-AEA5-C5A0C7D894C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE37F09C-D371-433F-AE27-6E206E61342A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE37F09C-D371-433F-AE27-6E206E61342A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE37F09C-D371-433F-AE27-6E206E61342A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE37F09C-D371-433F-AE27-6E206E61342A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

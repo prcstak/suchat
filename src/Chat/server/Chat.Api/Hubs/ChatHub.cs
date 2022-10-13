@@ -1,5 +1,5 @@
 ﻿using Chat.Api.Producer;
-using Chat.Application.Common.Dto;
+using Chat.Common.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;

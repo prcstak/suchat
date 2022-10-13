@@ -1,5 +1,7 @@
 ﻿using Chat.Domain;
-using Chat.Infrastructure.Common;
+using Chat.Infrastructure.Configurations;
+using Chat.Infrastructure.Contexts;
+using Chat.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,10 @@ public static class ConfigureServices
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+        
+        services.AddSingleton<IMongoDbConfiguration, MongoDbConfiguration>();
+        
+        services.AddScoped<IFileMetaDbContext, FileMetaDbContext>();
         
         return services;
     }

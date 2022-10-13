@@ -1,10 +1,10 @@
-﻿using Chat.Application.Common.Dto;
-using Chat.Application.Common.Interfaces;
+﻿using Chat.Application.Interfaces;
+using Chat.Common.Dto;
 using Chat.Domain;
-using Chat.Infrastructure.Common;
+using Chat.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chat.Application;
+namespace Chat.Application.Services;
 
 public class MessageService : IMessageService
 {
