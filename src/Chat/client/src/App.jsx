@@ -1,18 +1,31 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import Chat from "./pages/Chat.jsx";
-import React from 'react';
-import {Route, Routes} from "react-router-dom";
-import Login from "./pages/Login.jsx";
-import Registration from "./pages/Registration.jsx";
-import ProtectedRoutes from "./pages/ProtectedRoutes.jsx";
+import React, {useState} from 'react';
+import {Card, Col, Container, Row} from "react-bootstrap";
+import SimpleLogin from "./pages/SimpleLogin.jsx";
 
 function App() {
+    const [user, setUser] = useState('');
 
-  return (
-    <div className="App">
-        <Chat/>
-    </div>
-  )
+    return (
+        <div>
+            <Container className="vh-100 d-flex flex-column ">
+                <Row className="h-100">
+                    <Col/>
+                    <Col xs={6}>
+                        <Card style={{padding: 0, height: "100%"}}>
+                            {
+                                user === '' ?
+                                    <SimpleLogin setName={() => setUser()}/> :
+                                    <Chat user={user}/>
+                            }
+                        </Card>
+                    </Col>
+                    <Col/>
+                </Row>
+            </Container>
+        </div>
+    )
 }
 
 export default App
