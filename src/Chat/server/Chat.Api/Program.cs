@@ -1,4 +1,7 @@
 using System.Text;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using Amazon.S3;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
 using Chat.Infrastructure;
@@ -11,10 +14,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddSignalR();
+
 builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+
+var awsOptions = new AWSOptions
+{
+    Credentials = new BasicAWSCredentials(
+        builder.Configuration["AWS:AccessKey"],
+        builder.Configuration["AWS:AccessSecret"]),
+
+    DefaultClientConfig =
+    {
+        ServiceURL = builder.Configuration["AWS:ServiceUrl"]
+    }
+};
+
+builder.Services.AddDefaultAWSOptions(awsOptions);
+builder.Services.AddAWSService<IAmazonS3>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -25,9 +25,9 @@ public static class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
         
-        services.AddSingleton<IMongoDbConfiguration, MongoDbConfiguration>();
+        // services.AddSingleton<IMongoDbConfiguration, MongoDbConfiguration>();
         
-        services.AddScoped<IFileMetaDbContext, FileMetaDbContext>();
+        // services.AddScoped<IFileMetaDbContext, FileMetaDbContext>();
         
         return services;
     }
