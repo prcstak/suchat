@@ -28,7 +28,7 @@ public class FileProcessor : IFileProcessor
             await file.CopyToAsync(fileStream);  // must be explicitly in curly brackets
         }
 
-        var metaData = GetTypeOfProcess(file).GetMeta();
+        var metaData = GetTypeOfProcess(file, filePath).GetMeta();
 
         RemoveTempFile(filePath);
         
@@ -38,10 +38,10 @@ public class FileProcessor : IFileProcessor
     private static string? GetExtension(string contentType)
         => contentType.Split('/').Last();
 
-    private static IFileProcessCommand GetTypeOfProcess(IFormFile file) 
+    private static IFileProcessCommand GetTypeOfProcess(IFormFile file, string filepath) 
         => GetExtension(file.ContentType) switch 
         {
-            "jpeg" => new ProcessJpgCommand(Path.Combine(_cachePath!, file.FileName)),
+            "jpeg" => new ProcessJpgCommand(filepath),
             _ => throw new FileExtensionException()
         };
 
