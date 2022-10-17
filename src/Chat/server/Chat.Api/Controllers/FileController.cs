@@ -1,19 +1,25 @@
-﻿using System.Text;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Mvc;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Jpeg;
+using MetadataExtractor.Formats.Png;
+using Directory = System.IO.Directory;
 
 namespace Chat.Api.Controllers;
 
 public class FileController : BaseController
 {
     private readonly IAmazonS3 _amazonS3;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public FileController(
-        IAmazonS3 amazonS3)
+        IAmazonS3 amazonS3,
+        IWebHostEnvironment webHostEnvironment)
     {
         _amazonS3 = amazonS3;
+        _webHostEnvironment = webHostEnvironment;
     }
     
     [HttpPost]
@@ -60,7 +66,21 @@ public class FileController : BaseController
         var fileTransferUtility = new TransferUtility(_amazonS3);
         await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
 
-        return Ok();
+        var uploads = Path.Combine(_webHostEnvironment.ContentRootPath, "_cache");
+        if (!Directory.Exists(uploads))
+            Directory.CreateDirectory(uploads);
+        
+        await using (var fileStream = new FileStream(
+            Path.Combine(uploads, file.FileName),
+            FileMode.Create,
+            FileAccess.Write))
+        {
+            await file.CopyToAsync(fileStream, cancellationToken);  
+        };
+
+        var meta = JpegMetadataReader.ReadMetadata(Path.Combine(uploads, file.FileName));
+        
+        return Ok(meta);
     }
 
     [HttpGet]
@@ -88,5 +108,20 @@ public class FileController : BaseController
         var response = await _amazonS3.ListObjectsAsync(bucketName);
 
         return Ok(response.S3Objects);
+    }
+
+    [HttpGet]
+    [Route("meta")]
+    public async Task<IActionResult> GetObjectMeta(string bucketName, string objectKey)
+    {
+        var request = new GetObjectMetadataRequest()
+        {
+            BucketName = bucketName,
+            Key = objectKey
+        };
+
+        var response = await _amazonS3.GetObjectMetadataAsync(request);
+
+        return Ok(response);
     }
 }
