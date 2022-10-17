@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Chat.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Jpeg;
@@ -12,14 +13,14 @@ namespace Chat.Api.Controllers;
 public class FileController : BaseController
 {
     private readonly IAmazonS3 _amazonS3;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IFileProcessor _fileProcessor;
 
     public FileController(
         IAmazonS3 amazonS3,
-        IWebHostEnvironment webHostEnvironment)
+        IFileProcessor fileProcessor)
     {
         _amazonS3 = amazonS3;
-        _webHostEnvironment = webHostEnvironment;
+        _fileProcessor = fileProcessor;
     }
     
     [HttpPost]
@@ -66,21 +67,9 @@ public class FileController : BaseController
         var fileTransferUtility = new TransferUtility(_amazonS3);
         await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
 
-        var uploads = Path.Combine(_webHostEnvironment.ContentRootPath, "_cache");
-        if (!Directory.Exists(uploads))
-            Directory.CreateDirectory(uploads);
+        var metaData = _fileProcessor.ExtractMetadataAsync(file);
         
-        await using (var fileStream = new FileStream(
-            Path.Combine(uploads, file.FileName),
-            FileMode.Create,
-            FileAccess.Write))
-        {
-            await file.CopyToAsync(fileStream, cancellationToken);  
-        };
-
-        var meta = JpegMetadataReader.ReadMetadata(Path.Combine(uploads, file.FileName));
-        
-        return Ok(meta);
+        return Ok(metaData);
     }
 
     [HttpGet]
