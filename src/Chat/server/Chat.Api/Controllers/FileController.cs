@@ -67,7 +67,7 @@ public class FileController : BaseController
         var fileTransferUtility = new TransferUtility(_amazonS3);
         await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
 
-        var metaData = _fileProcessor.ExtractMetadataAsync(file);
+        var metaData = await _fileProcessor.ExtractMetadataAsync(file);
         
         return Ok(metaData);
     }

@@ -36,12 +36,12 @@ public class FileProcessor : IFileProcessor
     }
 
     private static string? GetExtension(string contentType)
-        => contentType.Split('/').LastOrDefault();
+        => contentType.Split('/').Last();
 
     private static IFileProcessCommand GetTypeOfProcess(IFormFile file) 
         => GetExtension(file.ContentType) switch 
         {
-            "jpg" => new ProcessJpgCommand(Path.Combine(_cachePath!, file.FileName)),
+            "jpeg" => new ProcessJpgCommand(Path.Combine(_cachePath!, file.FileName)),
             _ => throw new FileExtensionException()
         };
 
