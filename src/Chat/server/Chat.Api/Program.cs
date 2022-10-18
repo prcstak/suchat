@@ -20,7 +20,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+builder.Services.AddScoped<IBrokerProducer, MessageProducer>();
 
 var awsOptions = new AWSOptions
 {

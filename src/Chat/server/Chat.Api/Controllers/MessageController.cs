@@ -8,11 +8,11 @@ namespace Chat.Api.Controllers;
 public class MessageController : BaseController
 {
     private readonly IMessageService _messageService;
-    private readonly IMessageProducer _messageProducer;
+    private readonly IBrokerProducer _messageProducer;
 
     public MessageController(
         IMessageService messageService, 
-        IMessageProducer messageProducer)
+        IBrokerProducer messageProducer)
     {
         _messageService = messageService;
         _messageProducer = messageProducer;

@@ -4,11 +4,10 @@ using RabbitMQ.Client;
 
 namespace Chat.Api.Producer;
 
-public class MessageProducer : IMessageProducer
+public class MessageProducer : IBrokerProducer
 {
     public void SendMessage<T>(T message)
     {
-        // REFACTOR: apply external config
         var factory = new ConnectionFactory
         {
             HostName = "rabbitmq",

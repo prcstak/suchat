@@ -41,7 +41,7 @@ public class FileProcessor : IFileProcessor
     private static IFileProcessCommand GetTypeOfProcess(IFormFile file, string filepath) 
         => GetExtension(file.ContentType) switch 
         {
-            "jpeg" => new ProcessJpgCommand(filepath),
+            "jpeg" => new ProcessJpegCommand(filepath),
             _ => throw new FileExtensionException()
         };
 

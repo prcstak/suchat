@@ -4,10 +4,10 @@ using Directory = MetadataExtractor.Directory;
 
 namespace Chat.Application.Processors.FileCommands;
 
-public class ProcessJpgCommand : IFileProcessCommand
+public class ProcessJpegCommand : IFileProcessCommand
 {
-    private string _path;
-    public ProcessJpgCommand(string path)
+    private readonly string _path;
+    public ProcessJpegCommand(string path)
     {
         _path = path;
     }
