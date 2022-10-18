@@ -10,7 +10,7 @@ var host = Host
     .CreateDefaultBuilder(args)
     .ConfigureServices((_, services) =>
     {
-        services.AddApplication();
+        services.AddApplication(config);
         services.AddInfrastructure(config);
         services.AddHostedService<ConsumerHostedService>();
     })
