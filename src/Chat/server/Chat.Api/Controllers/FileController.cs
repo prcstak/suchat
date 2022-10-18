@@ -40,9 +40,9 @@ public class FileController : BaseController
         IFormFile file, 
         CancellationToken cancellationToken)
     {
-        await _fileService.UploadFileAsync(bucketName, file, cancellationToken);
+        using var fileStream = await _fileService.UploadFileAsync(bucketName, file, cancellationToken);
 
-        var metaData = await _fileProcessor.ExtractMetadataAsync(file);
+        var metaData = _fileProcessor.ExtractMetadataAsync(fileStream, file);
         
         return Ok(metaData);
     }

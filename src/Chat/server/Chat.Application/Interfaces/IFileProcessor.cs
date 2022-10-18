@@ -4,5 +4,5 @@ namespace Chat.Application.Interfaces;
 
 public interface IFileProcessor
 {
-    Task<IReadOnlyList<MetadataExtractor.Directory>?> ExtractMetadataAsync(IFormFile file);
+    IReadOnlyList<MetadataExtractor.Directory>? ExtractMetadataAsync(Stream stream, IFormFile file);
 }

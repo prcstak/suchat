@@ -9,7 +9,7 @@ public interface IFileService
     
     Task<List<S3Bucket>> GetAllBucketsAsync();
 
-    Task UploadFileAsync(
+    Task<MemoryStream> UploadFileAsync(
         string bucketName,
         IFormFile file,
         CancellationToken cancellationToken);

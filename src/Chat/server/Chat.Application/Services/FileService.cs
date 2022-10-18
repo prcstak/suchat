@@ -37,7 +37,7 @@ public class FileService : IFileService
         return response.Buckets;
     }
 
-    public async Task UploadFileAsync(
+    public async Task<MemoryStream> UploadFileAsync(
         string bucketName,
         IFormFile file,
         CancellationToken cancellationToken)
@@ -55,6 +55,8 @@ public class FileService : IFileService
 
         var fileTransferUtility = new TransferUtility(_amazonS3);
         await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
+
+        return newMemoryStream;
     }
 
     public async Task<Stream> DownloadObjectAsync(
