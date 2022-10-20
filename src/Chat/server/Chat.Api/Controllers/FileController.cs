@@ -1,5 +1,9 @@
-﻿using Chat.Application.Interfaces;
+﻿using Chat.Api.Producer;
+using Chat.Application.Interfaces;
+using Chat.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using File = Chat.Domain.File;
 
 namespace Chat.Api.Controllers;
 
@@ -7,13 +11,22 @@ public class FileController : BaseController
 {
     private readonly IFileService _fileService;
     private readonly IFileProcessor _fileProcessor;
+    private readonly IMessageProducer _messageProducer;
+    private readonly IFileMetaDbContext _fileMetaDbContext;
+    private readonly IMongoCollection<File> _fileCollection;
 
     public FileController(
         IFileService fileService,
-        IFileProcessor fileProcessor)
+        IFileProcessor fileProcessor,
+        IMessageProducer messageProducer,
+        IFileMetaDbContext fileMetaDbContext
+        )
     {
         _fileService = fileService;
         _fileProcessor = fileProcessor;
+        _messageProducer = messageProducer;
+        _fileMetaDbContext = fileMetaDbContext;
+        _fileCollection = _fileMetaDbContext.GetCollection<File>("meta");
     }
     
     [HttpPost]
@@ -43,6 +56,14 @@ public class FileController : BaseController
         using var fileStream = await _fileService.UploadFileAsync(bucketName, file, cancellationToken);
 
         var metaData = _fileProcessor.ExtractMetadataAsync(fileStream, file);
+
+        await _fileCollection.InsertOneAsync(new File()
+        {
+            Id = new Guid(),
+            Meta = metaData.ToString()
+        });
+        
+        //_messageProducer.SendMessage(metaData);
         
         return Ok(metaData);
     }

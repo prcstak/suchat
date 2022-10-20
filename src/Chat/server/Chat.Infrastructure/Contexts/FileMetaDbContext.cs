@@ -1,4 +1,5 @@
-﻿using Chat.Infrastructure.Interfaces;
+﻿using Chat.Domain;
+using Chat.Infrastructure.Interfaces;
 using MongoDB.Driver;
 using File = Chat.Domain.File;
 
@@ -14,4 +15,7 @@ public class FileMetaDbContext : IFileMetaDbContext
         var client = new MongoClient(mongoDbConfiguration.ConnectionString);
         _db = client.GetDatabase(mongoDbConfiguration.Database);
     }
+    
+    public  IMongoCollection<T> GetCollection<T>(string name) =>
+        _db.GetCollection<T>("meta");
 }

@@ -4,13 +4,13 @@ using RabbitMQ.Client;
 
 namespace Chat.Api.Producer;
 
-public class MessageProducer : IBrokerProducer
+public class MessageProducer : IMessageProducer
 {
     public void SendMessage<T>(T message)
     {
         var factory = new ConnectionFactory
         {
-            HostName = "rabbitmq",
+            HostName = "http://localhost:5672/",
         };
         var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();

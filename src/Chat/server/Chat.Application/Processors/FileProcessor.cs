@@ -2,12 +2,13 @@
 using Chat.Application.Processors.Helpers;
 using Chat.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Directory = MetadataExtractor.Directory;
 
 namespace Chat.Application.Processors;
 
 public class FileProcessor : IFileProcessor
 {
-    public IReadOnlyList<MetadataExtractor.Directory>? ExtractMetadataAsync(
+    public IReadOnlyList<Directory>? ExtractMetadataAsync(
         Stream stream, 
         IFormFile file)
     {

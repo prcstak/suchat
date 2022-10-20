@@ -1,6 +1,6 @@
 ﻿namespace Chat.Api.Producer;
 
-public interface IBrokerProducer
+public interface IMessageProducer
 {
     void SendMessage<T> (T message);
 }

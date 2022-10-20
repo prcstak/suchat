@@ -3,6 +3,7 @@ using Chat.Api.Hubs;
 using Chat.Api.Producer;
 using Chat.Infrastructure;
 using Chat.Application;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<IBrokerProducer, MessageProducer>();
+builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 
 builder.Services.AddAccessSecurity(builder.Configuration);
 
@@ -40,5 +41,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<ChatHub>("/Chat");
+
+app.UseExceptionHandler(c => c.Run(async context =>
+{
+    var exception = context.Features
+        .Get<IExceptionHandlerPathFeature>()
+        .Error;
+    var response = new { error = exception.Message };
+    await context.Response.WriteAsJsonAsync(response);
+}));
 
 app.Run();

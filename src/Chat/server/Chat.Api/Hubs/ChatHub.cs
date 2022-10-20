@@ -9,9 +9,9 @@ namespace Chat.Api.Hubs;
 
 public class ChatHub : Hub
 {
-    private readonly IBrokerProducer _producer;
+    private readonly IMessageProducer _producer;
 
-    public ChatHub(IBrokerProducer producer)
+    public ChatHub(IMessageProducer producer)
     {
         _producer = producer;
     }

@@ -14,7 +14,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     private IConnection _connection;
     private IModel _channel;
     private ConnectionFactory _connectionFactory;
-    private const string QueueName = "chat";
+    private const string MessageQueueName = "chat";
+    private const string FileQueueName = "file";
     private ILogger<ConsumerHostedService> _logger;
     private readonly IMessageService _messageService;
     private IApplicationDbContext _context;
@@ -34,23 +35,50 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         // REFACTOR: apply external config
         _connectionFactory = new ConnectionFactory
         {
-            HostName = "rabbitmq",
+            HostName = "http://localhost:5672/",
         };
-        
+
         _connection = _connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.QueueDeclare(queue: "chat",
+
+
+        _channel.QueueDeclare(queue: MessageQueueName,
             durable: false,
             exclusive: false,
             autoDelete: false,
             arguments: null);
+        _logger.LogInformation($"[{MessageQueueName}] has started.");
 
-        _logger.LogInformation($"[{QueueName}] has started.");
+        _channel.QueueDeclare(queue: FileQueueName,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+        _logger.LogInformation($"[{FileQueueName}] has started.");
+
 
         return base.StartAsync(cancellationToken);
     }
-    
+
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        var messageConsumer = CreateMessageConsumer(cancellationToken);
+        var fileConsumer = CreateFileConsumer(cancellationToken);
+
+        _channel.BasicConsume(queue: MessageQueueName, autoAck: true, consumer: messageConsumer);
+        _channel.BasicConsume(queue: FileQueueName, autoAck: true, consumer: fileConsumer);
+
+        await Task.CompletedTask;
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await base.StopAsync(cancellationToken);
+        _connection.Close();
+        _logger.LogInformation("Consumer is stopped");
+    }
+
+    private IBasicConsumer CreateMessageConsumer(CancellationToken cancellationToken)
     {
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += async (model, ea) =>
@@ -68,16 +96,25 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 _logger.LogWarning("Exception: " + exception.Message);
             }
         };
-
-        _channel.BasicConsume(queue: QueueName, autoAck: true, consumer: consumer);
-
-        await Task.CompletedTask;
+        return consumer;
     }
     
-    public override async Task StopAsync(CancellationToken cancellationToken)
+    private IBasicConsumer CreateFileConsumer(CancellationToken cancellationToken)
     {
-        await base.StopAsync(cancellationToken);
-        _connection.Close();
-        _logger.LogInformation("Consumer is stopped");
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += async (model, ea) =>
+        {
+            try
+            {
+                var body = ea.Body.ToArray();
+                var message = JsonSerializer.Deserialize<IReadOnlyList<dynamic>>(body);
+                
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning("Exception: " + exception.Message);
+            }
+        };
+        return consumer;
     }
 }

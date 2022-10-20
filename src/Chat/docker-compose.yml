@@ -1,42 +1,39 @@
 version: '3.8'
 
-# networks:
-#   app-tier:
-#     driver: bridge
 
 services:
 
-  chat-server:
-    build:
-      context: ./server
-      dockerfile: ./Chat.Api/Dockerfile
-    container_name: 'server'
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "8000:80"
-    depends_on:
-      - rabbitmq
+  # chat-server:
+  #   build:
+  #     context: ./server
+  #     dockerfile: ./Chat.Api/Dockerfile
+  #   container_name: 'server'
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #   ports:
+  #     - "8000:80"
+  #   depends_on:
+  #     - rabbitmq
 
-  chat-client:
-    build:
-      context: ./client
-      dockerfile: ./Dockerfile
-    environment:
-      - HOST=0.0.0.0
-    ports:
-      - "5173:5173"
+  # chat-client:
+  #   build:
+  #     context: ./client
+  #     dockerfile: ./Dockerfile
+  #   environment:
+  #     - HOST=0.0.0.0
+  #   ports:
+  #     - "5173:5173"
 
-  chat-consumer:
-    build:
-      context: ./server
-      dockerfile: ./Chat.BackgroundService/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "8001:80"
-    depends_on:
-      - rabbitmq
+  # chat-consumer:
+  #   build:
+  #     context: ./server
+  #     dockerfile: ./Chat.BackgroundService/Dockerfile
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #   ports:
+  #     - "8001:80"
+  #   depends_on:
+  #     - rabbitmq
 
   db:
     image: postgres
@@ -47,6 +44,16 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "admin"
       POSTGRES_DB: "Chat"
+    restart: always
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "mongo"
+      MONGO_INITDB_ROOT_PASSWORD: "admin"
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -54,3 +61,15 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    restart: always
+
+  my-s3-server:
+    image: zenko/cloudserver
+    ports:
+      - 8000:8000
+    environment:
+      - SCALITY_ACCESS_KEY_ID=access
+      - SCALITY_SECRET_ACCESS_KEY=secret
+      - S3DATA=multiple
+      - S3BACKEND=mem
+    restart: always
