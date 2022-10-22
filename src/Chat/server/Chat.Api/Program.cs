@@ -1,6 +1,8 @@
+using Chat.Api.Commands.Handler;
 using Chat.Api.Extensions;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
+using Chat.Api.Queries.Handler;
 using Chat.Infrastructure;
 using Chat.Application;
 using Microsoft.AspNetCore.Diagnostics;
@@ -13,6 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddTransient<MetaQueryHandler>();
+builder.Services.AddTransient<MetaCommandHandler>();
 
 builder.Services.AddSignalR();
 
