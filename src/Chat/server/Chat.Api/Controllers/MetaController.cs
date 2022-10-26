@@ -28,7 +28,7 @@ public class MetaController : BaseController
         return Ok(meta);
     }
 
-    [HttpGet]
+    [HttpPost]
     public async Task<IActionResult> DeleteMeta(string filename)
     {
         var command = new DeleteMetaCommand(filename);

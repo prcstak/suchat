@@ -1,8 +1,6 @@
 ﻿using System.Text.Json;
-using Chat.Application;
 using Chat.Application.Interfaces;
 using Chat.Common.Dto;
-using Chat.Infrastructure;
 using Chat.Infrastructure.Interfaces;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -15,19 +13,21 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     private IModel _channel;
     private ConnectionFactory _connectionFactory;
     private const string MessageQueueName = "chat";
-    private const string FileQueueName = "file";
     private ILogger<ConsumerHostedService> _logger;
     private readonly IMessageService _messageService;
     private IApplicationDbContext _context;
+    private readonly IConfiguration _config;
 
     public ConsumerHostedService(
         IApplicationDbContext context,
         ILogger<ConsumerHostedService> logger,
-        IMessageService messageService)
+        IMessageService messageService,
+        IConfiguration config)
     {
         _context = context;
         _logger = logger;
         _messageService = messageService;
+        _config = config;
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -35,9 +35,9 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         // REFACTOR: apply external config
         _connectionFactory = new ConnectionFactory
         {
-            HostName = "http://localhost:5672/",
+            HostName = _config["RabbitMQ:Hostname"],
+            Port = Convert.ToInt32(_config["RabbitMQ:Port"]),
         };
-
         _connection = _connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
 
@@ -49,13 +49,6 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
             arguments: null);
         _logger.LogInformation($"[{MessageQueueName}] has started.");
 
-        _channel.QueueDeclare(queue: FileQueueName,
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
-        _logger.LogInformation($"[{FileQueueName}] has started.");
-
 
         return base.StartAsync(cancellationToken);
     }
@@ -63,10 +56,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         var messageConsumer = CreateMessageConsumer(cancellationToken);
-        var fileConsumer = CreateFileConsumer(cancellationToken);
 
         _channel.BasicConsume(queue: MessageQueueName, autoAck: true, consumer: messageConsumer);
-        _channel.BasicConsume(queue: FileQueueName, autoAck: true, consumer: fileConsumer);
 
         await Task.CompletedTask;
     }
@@ -90,25 +81,6 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 await _messageService.AddAsync(
                     new AddMessageDto(message.Username, message.Body),
                     cancellationToken);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning("Exception: " + exception.Message);
-            }
-        };
-        return consumer;
-    }
-    
-    private IBasicConsumer CreateFileConsumer(CancellationToken cancellationToken)
-    {
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += async (model, ea) =>
-        {
-            try
-            {
-                var body = ea.Body.ToArray();
-                var message = JsonSerializer.Deserialize<IReadOnlyList<dynamic>>(body);
-                
             }
             catch (Exception exception)
             {

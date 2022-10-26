@@ -25,4 +25,9 @@
       <ProjectReference Include="..\Chat.Application\Chat.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Producer\RabbitMqClient.cs" />
+      <Compile Remove="Models\RabbitMqRequest.cs" />
+    </ItemGroup>
+
 </Project>
