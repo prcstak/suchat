@@ -47,7 +47,7 @@ public class FileController : BaseController
     {
         using var fileStream = await _fileService.UploadFileAsync(bucketName, file, cancellationToken);
 
-        var metaData = _fileProcessor.ExtractMetadataAsync(fileStream, file);
+        var metaData = await _fileProcessor.ExtractMetadataAsync(fileStream, file);
         
         //_messageProducer.SendMessage(metaData);
         
