@@ -3,6 +3,7 @@ import {Button, Card, Col, Container, InputGroup, Row, Form} from "react-bootstr
 import Message from "../widgets/message.jsx";
 import {HttpTransportType, HubConnectionBuilder} from "@microsoft/signalr";
 import api from "../utils/api.js";
+import axios from "axios";
 
 function Chat({user}) {
 
@@ -11,6 +12,7 @@ function Chat({user}) {
     const latestChat = useRef(null);
     const [input, setInput] = useState('');
     const [selectedFile, setSelectedFile] = React.useState(null);
+    const [images, setImages] = React.useState([]);
 
     latestChat.current = chat;
 
@@ -67,6 +69,9 @@ function Chat({user}) {
                 }
             })
         }
+        let imgs = [...images];
+        imgs.push(selectedFile.name)
+        setImages(imgs);
         connection.on('ReceiveMessage', (u, m, t) => {
             const updatedChat = [...latestChat.current];
             updatedChat.push({message: m, timestamp: t, isMine: user === u, user: u});
@@ -83,7 +88,7 @@ function Chat({user}) {
         setSelectedFile(e.target.files[0]);
     }
     return (
-        <Col style={{height: "100px", position: "relative"}}>
+        <div>
             <div style={{
                 position: "absolute",
                 right: 0,
@@ -97,28 +102,38 @@ function Chat({user}) {
                                         user={mes.user}
                                         timestamp={mes.timestamp}/>
                     })
-                }s
+                }
             </div>
-            <InputGroup style={{position: "absolute", bottom: 25}} className="mb-3">
-                <Form.Control
-                    onChange={(e) => setInput(e.target.value)}
-                    value={input}
-                    placeholder="Message"
-                    aria-label="Message"
-                    aria-describedby="basic-addon2"
-                />
+            {
+                images.map((img, index) => {
+                return <img src={'http://localhost:8000/test/'+img} alt='тут должна быть картинка' style={{width: 200, height: 400}}/>})
+        })
+            <Row>
+                <Col xs={6}>
+                    <InputGroup style={{position: "absolute", bottom: 0}} className="mb-3">
+                        <Form.Control
+                            onChange={(e) => setInput(e.target.value)}
+                            value={input}
+                            placeholder="Message"
+                            aria-label="Message"
+                            aria-describedby="basic-addon2"
+                        />
 
-                <Button variant="outline-secondary" id="button-addon2"
-                        onClick={(e) => {
-                            sendMessage(user, input);
-                        }}>
-                    Send
-                </Button>
-                <Form.Group controlId="formFile" className="mb-3">
-                    <Form.Control type="file" onChange={handleFileSelect} />
-                </Form.Group>
-            </InputGroup>
-        </Col>);
+                        <Button variant="outline-secondary" id="button-addon2"
+                                onClick={(e) => {
+                                    sendMessage(user, input);
+                                }}>
+                            Send
+                        </Button>
+                    </InputGroup>
+                </Col>
+                <Col xs={6}>
+                    <Form.Group style={{position: "absolute", bottom: 0}} controlId="formFile" className="mb-3">
+                        <Form.Control type="file" onChange={handleFileSelect} />
+                    </Form.Group>
+                </Col>
+            </Row>
+        </div>);
 }
 
 export default Chat;

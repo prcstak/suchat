@@ -1,14 +1,22 @@
 import React, {useState} from 'react';
-import {Button} from "react-bootstrap";
+import {Button, Form, InputGroup} from "react-bootstrap";
 
 const SimpleLogin = ({setName}) => {
     const [input, setInput] = useState('');
 
     return (
         <div>
-            <input onChange={(e) => setInput(e.target.value)}
-                    type={"text"}/>
-            <Button onClick={() => setName(input)}>Join</Button>
+            <InputGroup className="mb-3">
+                <Form.Control
+                    onChange={(e) => setInput(e.target.value)}
+                    value={input}
+                    placeholder="Name"
+                    aria-label="Name"
+                    aria-describedby="basic-addon2"
+                />
+
+                <Button onClick={() => setName(input)}>Join</Button>
+            </InputGroup>
         </div>
     );
 };

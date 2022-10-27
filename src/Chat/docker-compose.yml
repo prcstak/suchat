@@ -12,7 +12,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMQ__Hostname=rabbitmq
       - RabbitMQ__Port=5672
-      - AWS__ServiceURL=http://zenko:8000
+      - AWS__ServiceURL=http://localhost:8000
       - AWS__AccessKey=access
       - AWS__AccessSecret=secret
     ports:

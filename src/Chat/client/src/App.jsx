@@ -8,23 +8,21 @@ function App() {
     const [user, setUser] = useState('');
 
     return (
-        <div>
-            <Container className="vh-100 d-flex flex-column ">
-                <Row className="h-100">
-                    <Col/>
+            <Container className="vh-100">
+                <Row className="h-100 justify-content-md-center">
                     <Col xs={6}>
-                        <Card style={{padding: 0, height: "100%"}}>
+                        <Card style={{height: "100%"}}>
                             {
                                 user === '' ?
-                                    <SimpleLogin setName={() => setUser()}/> :
+                                    <Col md={{span: 6, offset: 3}} style={{paddingTop: 300}}>
+                                        <SimpleLogin setName={() => setUser()}/>
+                                    </Col> :
                                     <Chat user={user}/>
                             }
                         </Card>
                     </Col>
-                    <Col/>
                 </Row>
             </Container>
-        </div>
     )
 }
 
