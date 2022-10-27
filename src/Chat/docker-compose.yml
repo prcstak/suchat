@@ -3,48 +3,51 @@ version: '3.8'
 
 services:
 
-  # chat-server:
-  #   build:
-  #     context: ./server
-  #     dockerfile: ./Chat.Api/Dockerfile
-  #   container_name: 'server'
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - RabbitMQ__Hostname=rabbitmq
-  #     - RabbitMQ__Port=5672
-  #   ports:
-  #     - "8000:80"
-  #   depends_on:
-  #     - rabbitmq
+  chat-server:
+    build:
+      context: ./server
+      dockerfile: ./Chat.Api/Dockerfile
+    container_name: 'server'
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Hostname=rabbitmq
+      - RabbitMQ__Port=5672
+      - AWS__ServiceURL=http://zenko:8000
+      - AWS__AccessKey=access
+      - AWS__AccessSecret=secret
+    ports:
+      - "5225:80"
+    depends_on:
+      - rabbitmq
 
-  # chat-client:
-  #   build:
-  #     context: ./client
-  #     dockerfile: ./Dockerfile
-  #   environment:
-  #     - HOST=0.0.0.0
-  #   ports:
-  #     - "5173:5173"
+  chat-client:
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile
+    environment:
+      - HOST=0.0.0.0
+    ports:
+      - "5173:5173"
 
-  # chat-consumer:
-  #   build:
-  #     context: ./server
-  #     dockerfile: ./Chat.BackgroundService/Dockerfile
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - RabbitMQ__Hostname=rabbitmq
-  #     - RabbitMQ__Port=5672
-  #   ports:
-  #     - "8001:80"
-  #   depends_on:
-  #     - rabbitmq
-  #   restart: always
+  chat-consumer:
+    build:
+      context: ./server
+      dockerfile: ./Chat.BackgroundService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Hostname=rabbitmq
+      - RabbitMQ__Port=5672
+    ports:
+      - "8001:80"
+    depends_on:
+      - rabbitmq
+    restart: always
 
   db:
     image: postgres
     container_name: 'db'
     ports:
-      - "7000:5432"
+      - "5432:5432"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "admin"
@@ -70,6 +73,7 @@ services:
 
   my-s3-server:
     image: zenko/cloudserver
+    container_name: 'zenko'
     ports:
       - 8000:8000
     environment:

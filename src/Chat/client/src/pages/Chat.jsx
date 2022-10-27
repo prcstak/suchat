@@ -10,12 +10,13 @@ function Chat({user}) {
     const [chat, setChat] = useState([]);
     const latestChat = useRef(null);
     const [input, setInput] = useState('');
+    const [selectedFile, setSelectedFile] = React.useState(null);
 
     latestChat.current = chat;
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl('http://localhost:8000/Chat', {
+            .withUrl('http://localhost:5225/Chat', {
                 withCredentials: false,
                 skipNegotiation: true,
                 transport: HttpTransportType.WebSockets
@@ -26,7 +27,7 @@ function Chat({user}) {
         setConnection(newConnection);
     }, []);
 
-    useEffect(() => {
+    useEffect( () => {
         const updatedChat = [...latestChat.current];
         api.post('Message/history?offset=0&limit=100').then((result) => {
             result['messages'].map((mes, index) => {
@@ -57,6 +58,15 @@ function Chat({user}) {
     }, [connection]);
 
     const sendMessage = async (u, m) => {
+        if (selectedFile!=null){
+            let formData = new FormData();
+            formData.append("file", selectedFile);
+            await api.post('/File?bucketName=test', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+        }
         connection.on('ReceiveMessage', (u, m, t) => {
             const updatedChat = [...latestChat.current];
             updatedChat.push({message: m, timestamp: t, isMine: user === u, user: u});
@@ -69,6 +79,9 @@ function Chat({user}) {
         await connection.send('SendMessage', chatMessage.user, chatMessage.message);
     }
 
+    const handleFileSelect = (e) => {
+        setSelectedFile(e.target.files[0]);
+    }
     return (
         <Col style={{height: "100px", position: "relative"}}>
             <div style={{
@@ -84,9 +97,9 @@ function Chat({user}) {
                                         user={mes.user}
                                         timestamp={mes.timestamp}/>
                     })
-                }
+                }s
             </div>
-            <InputGroup style={{position: "absolute", bottom: 0}} className="mb-3">
+            <InputGroup style={{position: "absolute", bottom: 25}} className="mb-3">
                 <Form.Control
                     onChange={(e) => setInput(e.target.value)}
                     value={input}
@@ -94,12 +107,16 @@ function Chat({user}) {
                     aria-label="Message"
                     aria-describedby="basic-addon2"
                 />
+
                 <Button variant="outline-secondary" id="button-addon2"
                         onClick={(e) => {
                             sendMessage(user, input);
                         }}>
                     Send
                 </Button>
+                <Form.Group controlId="formFile" className="mb-3">
+                    <Form.Control type="file" onChange={handleFileSelect} />
+                </Form.Group>
             </InputGroup>
         </Col>);
 }

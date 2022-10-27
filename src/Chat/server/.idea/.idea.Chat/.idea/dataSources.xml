@@ -5,7 +5,7 @@
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:7000/Chat</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5432/Chat</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="@localhost" uuid="04e861ba-b15e-4edc-8bf1-41dbab6d8b9d">

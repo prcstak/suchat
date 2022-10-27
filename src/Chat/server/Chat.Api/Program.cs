@@ -35,25 +35,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("All");
 
-app.UseAuthentication();
+//app.UseAuthentication();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 //app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
 app.MapHub<ChatHub>("/Chat");
-
-app.UseExceptionHandler(c => c.Run(async context =>
-{
-    var exception = context.Features
-        .Get<IExceptionHandlerPathFeature>()
-        .Error;
-    var response = new { error = exception.Message };
-    await context.Response.WriteAsJsonAsync(response);
-}));
-
 app.Run();
