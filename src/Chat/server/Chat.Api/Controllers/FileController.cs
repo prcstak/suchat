@@ -1,5 +1,6 @@
 ﻿using Chat.Api.Producer;
 using Chat.Application.Interfaces;
+using Chat.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers;
@@ -46,7 +47,7 @@ public class FileController : BaseController
     {
         using var fileStream = await _fileService.UploadFileAsync(bucketName, file, cancellationToken);
 
-        var metaData = await _fileProcessor.ExtractMetadataAsync(fileStream, file);
+        var metaData = _fileProcessor.ExtractMetadataAsync(fileStream, file);
         
         //_messageProducer.SendMessage(metaData);
         
@@ -61,7 +62,7 @@ public class FileController : BaseController
     {
         var file = await _fileService.DownloadObjectAsync(bucketName, objectKey, cancellationToken);
         
-        return File(file, "application/octet-stream"); // todo: redo
+        return File(file.Stream, file.ContentType, file.Filename);
     }
 
     [HttpGet]

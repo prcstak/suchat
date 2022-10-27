@@ -17,17 +17,7 @@ public class MessageController : BaseController
         _messageService = messageService;
         _messageProducer = messageProducer;
     }
-
-    [HttpPost]
-    public async Task<IActionResult> PostMessage(
-        AddMessageDto addMessageDto,
-        CancellationToken cancellationToken)
-    {
-        _messageProducer.SendMessage(addMessageDto);
-        
-        return Ok();
-    }
-
+    
     [HttpPost]
     [Route("history")]
     public async Task<IActionResult> GetHistory(

@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Model;
+using Chat.Common.Dto;
 using Microsoft.AspNetCore.Http;
 
 namespace Chat.Application.Interfaces;
@@ -14,8 +15,7 @@ public interface IFileService
         IFormFile file,
         CancellationToken cancellationToken);
 
-    Task<Stream> DownloadObjectAsync(
-        string bucketName,
+    Task<GetMetaDto> DownloadObjectAsync(string bucketName,
         string objectKey,
         CancellationToken cancellationToken);
 

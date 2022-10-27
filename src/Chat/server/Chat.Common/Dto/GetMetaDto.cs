@@ -1,6 +1,3 @@
 ﻿namespace Chat.Common.Dto;
 
-public class GetMetaDto
-{
-    
-}
+public record GetMetaDto(string Filename, Stream Stream, string ContentType);

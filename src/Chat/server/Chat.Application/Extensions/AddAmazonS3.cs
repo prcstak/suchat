@@ -20,7 +20,7 @@ public static class AmazonExtensions
 
             DefaultClientConfig =
             {
-                ServiceURL = configuration["AWS:ServiceUrl"]
+                ServiceURL = configuration["AWS:ServiceUrl"],
             }
         };
 

@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Chat.Application.Interfaces;
+using Chat.Common.Dto;
 using Microsoft.AspNetCore.Http;
 using GetObjectRequest = Amazon.S3.Model.GetObjectRequest;
 using S3Bucket = Amazon.S3.Model.S3Bucket;
@@ -59,11 +60,18 @@ public class FileService : IFileService
         return newMemoryStream;
     }
 
-    public async Task<Stream> DownloadObjectAsync(
-        string bucketName,
+    public async Task<GetMetaDto> DownloadObjectAsync(string bucketName,
         string objectKey,
         CancellationToken cancellationToken)
     {
+        var getObjectMetadataRequest  = new GetObjectMetadataRequest
+        {
+            BucketName = bucketName, 
+            Key = objectKey
+        };
+        
+        var meta = await _amazonS3.GetObjectMetadataAsync(getObjectMetadataRequest, cancellationToken);
+        
         var request = new GetObjectRequest
         {
             BucketName = bucketName,
@@ -73,7 +81,7 @@ public class FileService : IFileService
         using var response = await _amazonS3.GetObjectAsync(request, cancellationToken);
         var responseStream = response.ResponseStream;
 
-        return responseStream;
+        return new GetMetaDto(objectKey, responseStream, meta.Headers.ContentType);
     }
 
     public async Task<List<S3Object>> GetAllObjectFromBucketAsync(string bucketName)
