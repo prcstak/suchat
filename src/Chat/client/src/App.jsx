@@ -1,25 +1,23 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import Chat from "./pages/Chat.jsx";
+import ChatPage from "./pages/Chat/ChatPage.jsx";
 import React, {useState} from 'react';
 import {Card, Col, Container, Row} from "react-bootstrap";
-import SimpleLogin from "./pages/SimpleLogin.jsx";
+import SimpleLoginPage from "./pages/Login/SimpleLoginPage.jsx";
 
 function App() {
     const [user, setUser] = useState('');
 
     return (
-            <Container className="vh-100">
+            <Container fluid={true}  style={{backgroundColor: "lightseagreen", height: "100vh"}}>
                 <Row className="h-100 justify-content-md-center">
-                    <Col xs={6}>
-                        <Card style={{height: "100%"}}>
-                            {
-                                user === '' ?
-                                    <Col md={{span: 6, offset: 3}} style={{paddingTop: 300}}>
-                                        <SimpleLogin setName={() => setUser()}/>
-                                    </Col> :
-                                    <Chat user={user}/>
-                            }
-                        </Card>
+                    <Col xs={6} style={{padding: 0}}>
+                    {
+                        user === '' ?
+                            <Col md={{span: 6, offset: 3}} style={{paddingTop: 300}}>
+                                <SimpleLoginPage setName={setUser}/>
+                            </Col> :
+                            <ChatPage user={user}/>
+                    }
                     </Col>
                 </Row>
             </Container>

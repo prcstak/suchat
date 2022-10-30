@@ -6,6 +6,6 @@ public class Message
     
     public string Body { get; set; }
     
-    public DateTime Created { get; set; }
+    public string Created { get; set; }
     public string Username { get; set; }
 }

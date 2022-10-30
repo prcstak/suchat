@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button, Form, InputGroup} from "react-bootstrap";
 
-const SimpleLogin = ({setName}) => {
+const SimpleLoginPage = ({setName}) => {
     const [input, setInput] = useState('');
 
     return (
@@ -21,4 +21,4 @@ const SimpleLogin = ({setName}) => {
     );
 };
 
-export default SimpleLogin;
+export default SimpleLoginPage;

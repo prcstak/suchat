@@ -1,0 +1,9 @@
+.hideScroll::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+}
+
+.hideScroll::-webkit-scrollbar-thumb {
+    background: forestgreen;
+    border-radius: 20px;
+}
