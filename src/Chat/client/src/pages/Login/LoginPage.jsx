@@ -1,8 +1,8 @@
 import React, {useContext, useState} from 'react';
 import {Link, Navigate} from "react-router-dom";
-import {Context} from "../main.jsx";
+import {Context} from "../../main.jsx";
 
-const Login = () => {
+const LoginPage = () => {
     const {userStore} = useContext(Context);
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
@@ -45,4 +45,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default LoginPage;

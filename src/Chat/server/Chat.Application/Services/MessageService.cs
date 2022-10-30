@@ -20,9 +20,10 @@ public class MessageService : IMessageService
         var message = new Message
         {
             Body = addMessageDto.Body,
-            Created = DateTime.Now,
+            Created = DateTime.Now.ToString("s"),
             Username = addMessageDto.Username
         };
+        Console.WriteLine(message.Created);
 
         await _context.Messages.AddAsync(message, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -35,10 +36,11 @@ public class MessageService : IMessageService
     {
         var messages = await _context.Messages
             .AsNoTracking()
+            .OrderByDescending(t => t.Created)
             .Skip(offset)
             .Take(limit)
             .ToListAsync(cancellationToken);
-
+        Console.WriteLine(messages.FirstOrDefault());
         return GetMessagesList.MapFrom(messages);
     }
 }
