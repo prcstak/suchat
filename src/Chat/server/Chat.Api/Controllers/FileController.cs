@@ -50,7 +50,7 @@ public class FileController : BaseController
         if (_fileProcessor.IsSupportedExtension(file.ContentType))
         {
             var metaData = await _fileProcessor.ExtractMetadataAsync(fileStream, file);
-            _messageProducer.SendMessage(metaData);
+            // _messageProducer.SendMessage(metaData);
         }
         
         return Ok();

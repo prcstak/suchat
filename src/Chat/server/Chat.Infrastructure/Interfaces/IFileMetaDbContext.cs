@@ -8,5 +8,4 @@ namespace Chat.Infrastructure.Interfaces;
 public interface IFileMetaDbContext
 {
     IMongoCollection<BsonDocument> Files { get; }
-    public IMongoCollection<T> GetCollection<T>(string name);
 }
