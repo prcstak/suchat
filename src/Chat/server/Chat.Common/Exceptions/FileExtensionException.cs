@@ -2,5 +2,5 @@
 
 public class FileExtensionException : Exception
 {
-    public FileExtensionException() { }
+    public FileExtensionException(string extension) : base($"Extensions {extension} is not supported.") { }
 }

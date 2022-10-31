@@ -7,13 +7,16 @@ namespace Chat.Application.Processors;
 
 public class FileProcessor : IFileProcessor
 {
+    private static readonly string[] SupportedExtensions = { "jpeg" };
     private static string? _cachePath;
+
     public FileProcessor()
     {
         _cachePath ??= Path.Combine(Directory.GetCurrentDirectory(), "_cache");
         if (!Directory.Exists(_cachePath))
             Directory.CreateDirectory(_cachePath);
     }
+
     public async Task<IReadOnlyList<MetadataExtractor.Directory>?> ExtractMetadataAsync(Stream stream,
         IFormFile file)
     {
@@ -23,7 +26,7 @@ public class FileProcessor : IFileProcessor
                          FileMode.Create,
                          FileAccess.Write))
         {
-            await file.CopyToAsync(fileStream);  // must be explicitly in curly brackets
+            await file.CopyToAsync(fileStream); // must be explicitly in curly brackets
         }
 
         var metaData = GetMeta(file, filePath);
@@ -32,17 +35,19 @@ public class FileProcessor : IFileProcessor
 
         return metaData;
     }
+    
+    public bool IsSupportedExtension(string contentType)
+        => SupportedExtensions.Contains(contentType.Split('/')[^1]);
 
-
-    private static string? GetExtension(string contentType)
-        => contentType.Split('/').Last();
-
-    private static IReadOnlyList<MetadataExtractor.Directory> GetMeta(IFormFile file, string filepath) 
-        => GetExtension(file.ContentType) switch 
+    private static IReadOnlyList<MetadataExtractor.Directory> GetMeta(IFormFile file, string filepath)
+    {
+        var extension = file.ContentType.Split('/')[^1];
+        return extension switch
         {
             "jpeg" => ProcessFileTypeHelper.GetJpegMetadata(filepath),
-            _ => throw new FileExtensionException()
+            _ => throw new FileExtensionException(extension)
         };
+    }
 
     private static void RemoveTempFile(string filename)
         => File.Delete(Path.Combine(_cachePath!, filename));
