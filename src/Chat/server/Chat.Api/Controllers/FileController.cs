@@ -60,9 +60,10 @@ public class FileController : BaseController
         string objectKey,
         CancellationToken cancellationToken)
     {
+        // memory leak? =)
         var file = await _fileService.DownloadObjectAsync(bucketName, objectKey, cancellationToken);
-        
-        return File(file.Stream, file.ContentType, file.Filename);
+
+        return File(file.ResponseStream, file.Headers.ContentType, file.Key);
     }
 
     [HttpGet]

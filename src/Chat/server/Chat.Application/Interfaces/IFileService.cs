@@ -15,7 +15,7 @@ public interface IFileService
         IFormFile file,
         CancellationToken cancellationToken);
 
-    Task<GetMetaDto> DownloadObjectAsync(string bucketName,
+    Task<GetObjectResponse> DownloadObjectAsync(string bucketName,
         string objectKey,
         CancellationToken cancellationToken);
 

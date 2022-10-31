@@ -60,28 +60,19 @@ public class FileService : IFileService
         return newMemoryStream;
     }
 
-    public async Task<GetMetaDto> DownloadObjectAsync(string bucketName,
+    public async Task<GetObjectResponse> DownloadObjectAsync(string bucketName,
         string objectKey,
         CancellationToken cancellationToken)
     {
-        var getObjectMetadataRequest  = new GetObjectMetadataRequest
-        {
-            BucketName = bucketName, 
-            Key = objectKey
-        };
-        
-        var meta = await _amazonS3.GetObjectMetadataAsync(getObjectMetadataRequest, cancellationToken);
-        
         var request = new GetObjectRequest
         {
             BucketName = bucketName,
             Key = objectKey
         };
         
-        using var response = await _amazonS3.GetObjectAsync(request, cancellationToken);
-        var responseStream = response.ResponseStream;
+        var response = await _amazonS3.GetObjectAsync(request, cancellationToken);
 
-        return new GetMetaDto(objectKey, responseStream, meta.Headers.ContentType);
+        return response;
     }
 
     public async Task<List<S3Object>> GetAllObjectFromBucketAsync(string bucketName)
