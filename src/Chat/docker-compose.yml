@@ -1,6 +1,5 @@
 version: '3.8'
 
-
 services:
 
   server:
@@ -21,18 +20,39 @@ services:
       - "5225:80"
     depends_on:
       - s3
+      - metastorage
+      - db
 
   client:
     build:
       context: ./client
       dockerfile: ./Dockerfile
+    environment:
+      - HOST=0.0.0.0
     ports:
       - "5173:5173"
+
+  rabbitmq:
+      image: rabbitmq:3-management-alpine
+      ports:
+        - 5672:5672
+        - 15672:15672
+      restart: always
 
   mqconsumer:
     build:
       context: ./server
       dockerfile: ./Chat.BackgroundService/Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Hostname=rabbitmq
+      - RabbitMQ__Port=5672
+    ports:
+      - "8001:80"
+    restart: always
+    depends_on:
+      - rabbitmq
 
   db:
     image: postgres
@@ -41,6 +61,15 @@ services:
       - "7000:5432"
     environment:
       - 15672:15672
+    restart: always
+
+  metastorage:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=admin
     restart: always
 
   s3:
