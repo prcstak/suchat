@@ -2,7 +2,6 @@
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Chat.Application.Interfaces;
-using Chat.Common.Dto;
 using Microsoft.AspNetCore.Http;
 using GetObjectRequest = Amazon.S3.Model.GetObjectRequest;
 using S3Bucket = Amazon.S3.Model.S3Bucket;

@@ -1,27 +1,25 @@
 version: '3.8'
 
-
 services:
 
-  chat-server:
+  api:
     build:
       context: ./server
       dockerfile: ./Chat.Api/Dockerfile
-    container_name: 'server'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
       - RabbitMQ__Hostname=rabbitmq
       - RabbitMQ__Port=5672
-      - AWS__ServiceURL=http://localhost:8000
-      - AWS__AccessKey=access
-      - AWS__AccessSecret=secret
+      - AWS__ServiceURL=http://s3:9000
+      - AWS__AccessKey=minio_access_key
+      - AWS__AccessSecret=minio_secret_key
     ports:
       - "5225:80"
     depends_on:
-      - rabbitmq
+      - db
 
-  chat-client:
+  client:
     build:
       context: ./client
       dockerfile: ./Dockerfile
@@ -30,7 +28,7 @@ services:
     ports:
       - "5173:5173"
 
-  chat-consumer:
+  mqconsumer:
     build:
       context: ./server
       dockerfile: ./Chat.BackgroundService/Dockerfile
@@ -47,7 +45,6 @@ services:
 
   db:
     image: postgres
-    container_name: 'db'
     ports:
       - "7000:5432"
     environment:
@@ -73,14 +70,14 @@ services:
       - 15672:15672
     restart: always
 
-  my-s3-server:
-    image: zenko/cloudserver
-    container_name: 'zenko'
+  s3:
+    image: minio/minio
     ports:
-      - 8000:8000
+      - 9000:9000
+    volumes:
+      - ./storage/minio:/data
     environment:
-      - SCALITY_ACCESS_KEY_ID=access
-      - SCALITY_SECRET_ACCESS_KEY=secret
-      - S3DATA=multiple
-      - S3BACKEND=mem
+      - MINIO_ACCESS_KEY=minio_access_key
+      - MINIO_SECRET_KEY=minio_secret_key
+    command: server /data --console-address ":9001"
     restart: always
