@@ -1,4 +1,5 @@
-﻿using Amazon;
+﻿using System.Reflection;
+using Amazon;
 using Amazon.S3;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,14 +29,10 @@ public static class AmazonExtensions
 
     private static async void AddDefaultFilesBucket(IConfiguration configuration, AmazonS3Config s3Config)
     {
-        try
+        if (Assembly.GetCallingAssembly().GetName().Name == "Chat.Application")
         {
             var s3Client = GetS3Client(configuration, s3Config);
-            await s3Client.PutBucketAsync(configuration["AWS:Bucket"]);
-        }
-        catch (Exception e)
-        {
-            throw new ArgumentException("AWS:Bucket env was not provided or S3 server not started yet.");
+            await s3Client.PutBucketAsync(configuration["AWS:Bucket"]);   
         }
     }
 
