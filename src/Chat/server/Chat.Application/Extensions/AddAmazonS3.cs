@@ -11,22 +11,6 @@ public static class AmazonExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // var awsOptions = new AWSOptions
-        // {
-        //     Credentials = new BasicAWSCredentials(
-        //         configuration["AWS:AccessKey"],
-        //         configuration["AWS:AccessSecret"]),
-        //
-        //     DefaultClientConfig =
-        //     {
-        //         ServiceURL = configuration["AWS:ServiceUrl"],
-        //     },
-        //     DefaultConfigurationMode = DefaultConfigurationMode.Auto
-        // };
-        //
-        // services.AddDefaultAWSOptions(awsOptions);
-        // services.AddAWSService<IAmazonS3>();
-
         services.AddSingleton<IAmazonS3>(_ =>
         {
             var config = new AmazonS3Config

@@ -1,30 +1,28 @@
 version: '3.8'
 
+
 services:
 
-  api:
+  server:
     build:
       context: ./server
       dockerfile: ./Chat.Api/Dockerfile
+    container_name: 'server'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
       - RabbitMQ__Hostname=rabbitmq
       - RabbitMQ__Port=5672
-      - AWS__ServiceURL=http://s3:9000
-      - AWS__AccessKey=minio_access_key
-      - AWS__AccessSecret=minio_secret_key
+      - AWS__ServiceURL=http://s3:8000
+      - AWS__AccessKey=access
+      - AWS__AccessSecret=secret
     ports:
       - "5225:80"
-    depends_on:
-      - db
 
   client:
     build:
       context: ./client
       dockerfile: ./Dockerfile
-    environment:
-      - HOST=0.0.0.0
     ports:
       - "5173:5173"
 
@@ -32,52 +30,25 @@ services:
     build:
       context: ./server
       dockerfile: ./Chat.BackgroundService/Dockerfile
-    environment:
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
-      - ASPNETCORE_ENVIRONMENT=Development
-      - RabbitMQ__Hostname=rabbitmq
-      - RabbitMQ__Port=5672
-    ports:
-      - "8001:80"
-    depends_on:
-      - rabbitmq
-    restart: always
 
   db:
     image: postgres
+    container_name: 'db'
     ports:
       - "7000:5432"
     environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "admin"
-      POSTGRES_DB: "Chat"
-    restart: always
-
-  mongo:
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "mongo"
-      MONGO_INITDB_ROOT_PASSWORD: "admin"
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-      - 5672:5672
       - 15672:15672
     restart: always
 
   s3:
-    image: minio/minio
+    image: zenko/cloudserver
+    container_name: "s3"
     ports:
-      - 9000:9000
-    volumes:
-      - ./storage/minio:/data
+      - 8000:8000
     environment:
-      - MINIO_ACCESS_KEY=minio_access_key
-      - MINIO_SECRET_KEY=minio_secret_key
-    command: server /data --console-address ":9001"
+      - SCALITY_ACCESS_KEY_ID=access
+      - SCALITY_SECRET_ACCESS_KEY=secret
+      - S3DATA=multiple
+      - S3BACKEND=mem
+      - ENDPOINT=s3
     restart: always
