@@ -11,18 +11,34 @@ public static class AmazonExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddSingleton<IAmazonS3>(_ =>
+        var s3Config = new AmazonS3Config
         {
-            var config = new AmazonS3Config
-            {
-                RegionEndpoint = RegionEndpoint.USWest1,
-                ForcePathStyle = true,
-                ServiceURL = configuration["AWS:ServiceURL"]
-            };
-
-            return new AmazonS3Client(configuration["AWS:AccessKey"], configuration["AWS:AccessSecret"], config);
-        });
+            RegionEndpoint = RegionEndpoint.USWest1,
+            ForcePathStyle = true,
+            ServiceURL = configuration["AWS:ServiceURL"]
+        };
+        
+        services.AddSingleton<IAmazonS3>(_ 
+            => GetS3Client(configuration, s3Config));
+        
+        AddDefaultFilesBucket(configuration, s3Config);
 
         return services;
     }
+
+    private static async void AddDefaultFilesBucket(IConfiguration configuration, AmazonS3Config s3Config)
+    {
+        try
+        {
+            var s3Client = GetS3Client(configuration, s3Config);
+            await s3Client.PutBucketAsync(configuration["AWS:Bucket"]);
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentException("AWS:Bucket env was not provided or S3 server not started yet.");
+        }
+    }
+
+    private static AmazonS3Client GetS3Client(IConfiguration configuration, AmazonS3Config s3Config) 
+        => new(configuration["AWS:AccessKey"], configuration["AWS:AccessSecret"], s3Config);
 }

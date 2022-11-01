@@ -16,8 +16,11 @@ services:
       - AWS__ServiceURL=http://s3:8000
       - AWS__AccessKey=access
       - AWS__AccessSecret=secret
+      - AWS__Bucket=files
     ports:
       - "5225:80"
+    depends_on:
+      - s3
 
   client:
     build:

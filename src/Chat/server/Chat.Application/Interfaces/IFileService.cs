@@ -6,18 +6,15 @@ namespace Chat.Application.Interfaces;
 
 public interface IFileService
 {
-    Task CreateBucketAsync(string name);
-    
     Task<List<S3Bucket>> GetAllBucketsAsync();
 
     Task<MemoryStream> UploadFileAsync(
-        string bucketName,
         IFormFile file,
         CancellationToken cancellationToken);
 
-    Task<GetObjectResponse> DownloadObjectAsync(string bucketName,
+    Task<GetObjectResponse> DownloadObjectAsync(
         string objectKey,
         CancellationToken cancellationToken);
 
-    Task<List<S3Object>> GetAllObjectFromBucketAsync(string bucketName);
+    Task<List<S3Object>> GetAllObjectFromBucketAsync();
 }

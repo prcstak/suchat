@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Chat.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using GetObjectRequest = Amazon.S3.Model.GetObjectRequest;
 using S3Bucket = Amazon.S3.Model.S3Bucket;
 using S3Object = Amazon.S3.Model.S3Object;
@@ -12,24 +13,18 @@ namespace Chat.Application.Services;
 public class FileService : IFileService
 {
     private readonly IAmazonS3 _amazonS3;
+    private readonly IConfiguration _configuration;
+    private readonly string _bucket;
 
     public FileService(
-        IAmazonS3 amazonS3)
+        IAmazonS3 amazonS3,
+        IConfiguration configuration)
     {
         _amazonS3 = amazonS3;
+        _configuration = configuration;
+        _bucket = _configuration["AWS:Bucket"];
     }
-
-    public async Task CreateBucketAsync(string name)
-    {
-        var bucketRequest = new PutBucketRequest()
-        {
-            BucketName = name,
-            UseClientRegion = true,
-        };
-        
-        await _amazonS3.PutBucketAsync(bucketRequest);
-    }
-
+    
     public async Task<List<S3Bucket>> GetAllBucketsAsync()
     {
         var response = await _amazonS3.ListBucketsAsync();
@@ -38,7 +33,6 @@ public class FileService : IFileService
     }
 
     public async Task<MemoryStream> UploadFileAsync(
-        string bucketName,
         IFormFile file,
         CancellationToken cancellationToken)
     {
@@ -49,7 +43,7 @@ public class FileService : IFileService
         {
             InputStream = newMemoryStream,
             Key = file.FileName,
-            BucketName = bucketName,
+            BucketName = _bucket,
             CannedACL = S3CannedACL.PublicRead
         };
 
@@ -59,13 +53,13 @@ public class FileService : IFileService
         return newMemoryStream;
     }
 
-    public async Task<GetObjectResponse> DownloadObjectAsync(string bucketName,
+    public async Task<GetObjectResponse> DownloadObjectAsync(
         string objectKey,
         CancellationToken cancellationToken)
     {
         var request = new GetObjectRequest
         {
-            BucketName = bucketName,
+            BucketName = _bucket,
             Key = objectKey
         };
         
@@ -74,9 +68,9 @@ public class FileService : IFileService
         return response;
     }
 
-    public async Task<List<S3Object>> GetAllObjectFromBucketAsync(string bucketName)
+    public async Task<List<S3Object>> GetAllObjectFromBucketAsync()
     {
-        var response = await _amazonS3.ListObjectsAsync(bucketName);
+        var response = await _amazonS3.ListObjectsAsync(_bucket);
 
         return response.S3Objects;
     }
