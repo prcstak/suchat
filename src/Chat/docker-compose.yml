@@ -60,7 +60,9 @@ services:
     ports:
       - "7000:5432"
     environment:
-      - 15672:15672
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "Chat"
     restart: always
 
   metastorage:
