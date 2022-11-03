@@ -45,7 +45,6 @@ services:
       dockerfile: ./Chat.BackgroundService/Dockerfile
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
-      - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMQ__Hostname=rabbitmq
       - RabbitMQ__Port=5672
     ports:
