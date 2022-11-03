@@ -29,10 +29,14 @@ public static class AmazonExtensions
 
     private static async void AddDefaultFilesBucket(IConfiguration configuration, AmazonS3Config s3Config)
     {
-        if (Assembly.GetCallingAssembly().GetName().Name == "Chat.Application")
+        try
         {
             var s3Client = GetS3Client(configuration, s3Config);
-            await s3Client.PutBucketAsync(configuration["AWS:Bucket"]);   
+            await s3Client.PutBucketAsync(configuration["AWS:Bucket"]);
+        }
+        catch (Exception e)
+        {
+            //ignore
         }
     }
 
