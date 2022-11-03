@@ -16,8 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddTransient<MetaQueryHandler>();
-builder.Services.AddTransient<MetaCommandHandler>();
+builder.Services.AddCQRS();
 
 builder.Services.AddSignalR();
 

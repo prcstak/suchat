@@ -32,7 +32,6 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        // REFACTOR: apply external config
         _connectionFactory = new ConnectionFactory
         {
             HostName = _config["RabbitMQ:Hostname"],

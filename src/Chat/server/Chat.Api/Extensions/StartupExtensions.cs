@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using Chat.Api.Commands.Handler;
+using Chat.Api.Queries.Handler;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -37,6 +39,14 @@ public static class StartupExtensions
                         .SetIsOriginAllowed(_ => true);
                 });
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddCQRS(this IServiceCollection services)
+    {
+        services.AddTransient<MetaQueryHandler>();
+        services.AddTransient<MetaCommandHandler>();
 
         return services;
     }
