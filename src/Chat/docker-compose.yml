@@ -1,24 +1,29 @@
 version: '3.8'
 
-# networks:
-#   app-tier:
-#     driver: bridge
-
 services:
 
-  chat-server:
+  server:
     build:
       context: ./server
       dockerfile: ./Chat.Api/Dockerfile
     container_name: 'server'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
+      - RabbitMQ__Hostname=rabbitmq
+      - RabbitMQ__Port=5672
+      - AWS__ServiceURL=http://s3:8000
+      - AWS__AccessKey=access
+      - AWS__AccessSecret=secret
+      - AWS__Bucket=files
     ports:
-      - "8000:80"
+      - "5225:80"
     depends_on:
-      - rabbitmq
+      - s3
+      - metastorage
+      - db
 
-  chat-client:
+  client:
     build:
       context: ./client
       dockerfile: ./Dockerfile
@@ -27,14 +32,24 @@ services:
     ports:
       - "5173:5173"
 
-  chat-consumer:
+  rabbitmq:
+      image: rabbitmq:3-management-alpine
+      ports:
+        - 5672:5672
+        - 15672:15672
+      restart: always
+
+  mqconsumer:
     build:
       context: ./server
       dockerfile: ./Chat.BackgroundService/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
+      - RabbitMQ__Hostname=rabbitmq
+      - RabbitMQ__Port=5672
     ports:
       - "8001:80"
+    restart: always
     depends_on:
       - rabbitmq
 
@@ -47,10 +62,26 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "admin"
       POSTGRES_DB: "Chat"
+    restart: always
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
+  metastorage:
+    image: mongo
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    restart: always
+
+  s3:
+    image: zenko/cloudserver
+    container_name: "s3"
+    ports:
+      - 8000:8000
+    environment:
+      - SCALITY_ACCESS_KEY_ID=access
+      - SCALITY_SECRET_ACCESS_KEY=secret
+      - S3DATA=multiple
+      - S3BACKEND=mem
+      - ENDPOINT=s3
+    restart: always

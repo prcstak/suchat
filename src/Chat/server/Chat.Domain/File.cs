@@ -3,5 +3,5 @@
 public class File
 {
     public Guid Id { get; set; }
-    public DateTime Created { get; set; }
+    public string Meta { get; set; }
 }

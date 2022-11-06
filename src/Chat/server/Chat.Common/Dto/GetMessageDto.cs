@@ -5,7 +5,7 @@ namespace Chat.Common.Dto;
 public record GetMessageDto(
     Guid Id,
     string Body,
-    DateTime Created,
+    string Created,
     string Username)
 {
     public static GetMessageDto MapFrom(Message message)

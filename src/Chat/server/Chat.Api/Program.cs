@@ -1,48 +1,28 @@
-using System.Text;
+using Chat.Api.Commands.Handler;
+using Chat.Api.Extensions;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
+using Chat.Api.Queries.Handler;
 using Chat.Infrastructure;
 using Chat.Application;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddApplication();
+
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddCQRS();
+
 builder.Services.AddSignalR();
+
 builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(config =>
-    {
-        var secretBytes = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]);
-        var key = new SymmetricSecurityKey(secretBytes);
-
-        config.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            IssuerSigningKey = key,
-        };
-    });
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "All",
-        policyBuilder =>
-        {
-            policyBuilder
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .SetIsOriginAllowed(_ => true);
-        });
-});
+builder.Services.AddAccessSecurity(builder.Configuration);
 
 var app = builder.Build();
 
@@ -54,16 +34,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("All");
 
-app.UseAuthentication();
+//app.UseAuthentication();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 //app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
 app.MapHub<ChatHub>("/Chat");
-
 app.Run();

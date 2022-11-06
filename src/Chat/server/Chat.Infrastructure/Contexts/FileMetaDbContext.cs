@@ -1,13 +1,13 @@
 ﻿using Chat.Infrastructure.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
-using File = Chat.Domain.File;
 
 namespace Chat.Infrastructure.Contexts;
 
 public class FileMetaDbContext : IFileMetaDbContext
 {
-    public IMongoCollection<File> Files { get; }
     private readonly IMongoDatabase _db;
+    public IMongoCollection<BsonDocument> Files => _db.GetCollection<BsonDocument>("Meta");
 
     public FileMetaDbContext(IMongoDbConfiguration mongoDbConfiguration)
     {

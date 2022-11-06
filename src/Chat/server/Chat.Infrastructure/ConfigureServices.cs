@@ -26,7 +26,7 @@ public static class ConfigureServices
             .AddDefaultTokenProviders();
         
         services.AddSingleton<IMongoDbConfiguration, MongoDbConfiguration>();
-        
+
         services.AddScoped<IFileMetaDbContext, FileMetaDbContext>();
         
         return services;

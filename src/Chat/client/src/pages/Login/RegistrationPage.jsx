@@ -1,8 +1,8 @@
 import React, {useContext, useState} from 'react';
-import {Context} from "../main.jsx";
+import {Context} from "../../main.jsx";
 import {Navigate} from "react-router-dom";
 
-const Registration = () => {
+const RegistrationPage = () => {
     const {userStore} = useContext(Context);
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
@@ -42,4 +42,4 @@ const Registration = () => {
     );
 };
 
-export default Registration;
+export default RegistrationPage;

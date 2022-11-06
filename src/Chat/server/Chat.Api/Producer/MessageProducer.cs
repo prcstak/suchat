@@ -1,17 +1,24 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Chat.Domain;
 using RabbitMQ.Client;
 
 namespace Chat.Api.Producer;
 
 public class MessageProducer : IMessageProducer
 {
+    private readonly IConfiguration _config;
+
+    public MessageProducer(IConfiguration config)
+    {
+        _config = config;
+    }
     public void SendMessage<T>(T message)
     {
-        // REFACTOR: apply external config
         var factory = new ConnectionFactory
         {
-            HostName = "rabbitmq",
+            HostName = _config["RabbitMQ:Hostname"],
+            Port = Convert.ToInt32(_config["RabbitMQ:Port"]),
         };
         var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
