@@ -19,6 +19,15 @@ public class MetaController : BaseController
         _metaQueryHandler = metaQueryHandler;
     }
 
+    [HttpPost]
+    public async Task<IActionResult> SaveMeta(string metaJson, string filename, Guid id)
+    {
+        var command = new SaveMetaCommand(metaJson, filename, id);
+        await _metaCommandHandler.Handle(command);
+
+        return Ok();
+    }
+    
     [HttpGet]
     public async Task<IActionResult> GetMeta(string filename)
     {
@@ -26,14 +35,5 @@ public class MetaController : BaseController
         var meta = await _metaQueryHandler.Handle(query);
 
         return Ok(meta);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteMeta(string filename)
-    {
-        var command = new DeleteMetaCommand(filename);
-        await _metaCommandHandler.Handle(command);
-
-        return Ok();
     }
 }

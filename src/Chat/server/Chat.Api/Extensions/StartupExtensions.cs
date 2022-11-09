@@ -50,4 +50,17 @@ public static class StartupExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddCache(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(options =>  
+        {  
+            options.Configuration = configuration["Redis:Host"] + ":" + configuration["Redis:Port"];
+            options.ConfigurationOptions.Password = configuration["Redis:Password"];
+        });  
+        
+        return services;
+    }
 }

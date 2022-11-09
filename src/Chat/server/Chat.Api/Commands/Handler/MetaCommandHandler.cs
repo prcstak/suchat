@@ -1,24 +1,24 @@
-﻿using Chat.Common.Exceptions;
-using Chat.Infrastructure.Interfaces;
-using MongoDB.Bson;
-using FileNotFoundException = Chat.Common.Exceptions.FileNotFoundException;
+﻿using System.Text;
+using Chat.Application.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Chat.Api.Commands.Handler;
 
 public class MetaCommandHandler :
-    ICommandHandler<DeleteMetaCommand>
+    ICommandHandler<SaveMetaCommand>
 {
-    private readonly IFileMetaDbContext _context;
+    private readonly IMetaService _fileService;
+    private readonly IDistributedCache _cache; 
 
-    public MetaCommandHandler(IFileMetaDbContext context)
+    public MetaCommandHandler(IMetaService fileService, IDistributedCache cache)
     {
-        _context = context;
+        _fileService = fileService;
+        _cache = cache;
     }
-
-    public async Task Handle(DeleteMetaCommand command)
+    
+    public async Task Handle(SaveMetaCommand command)
     {
-        var result = await _context.Files.DeleteOneAsync(new BsonDocument("filename", command.Filename));
-        if (!result.IsAcknowledged)
-            throw new FileNotFoundException(command.Filename);
+        await _cache.SetAsync(command.Id.ToString(), Encoding.UTF8.GetBytes(command.MetaJson));
+        await _fileService.AddAsync(command.MetaJson, command.Filename, command.Id);
     }
 }

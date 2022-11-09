@@ -16,6 +16,8 @@ public static class ConfigureServices
         services.AddTransient<IMessageService, MessageService>();
         services.AddTransient<IFileProcessor, FileProcessor>();
         services.AddTransient<IFileService, FileService>();
+        services.AddTransient<IMetaService, MetaService>();
+        
         services.AddAmazon(configuration);
         
         return services;
