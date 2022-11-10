@@ -1,5 +1,6 @@
 ﻿using Chat.Application;
 using Chat.BackgroundService;
+using Chat.Cache;
 using Chat.Infrastructure;
 
 var host = Host
@@ -8,6 +9,8 @@ var host = Host
     {
         services.AddApplication(context.Configuration);
         services.AddInfrastructure(context.Configuration);
+        services.AddCache(context.Configuration);
+        
         services.AddHostedService<ConsumerHostedService>();
     })
     .Build();

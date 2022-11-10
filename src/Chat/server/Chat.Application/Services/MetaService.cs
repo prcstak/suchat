@@ -1,4 +1,5 @@
 ﻿using Chat.Application.Interfaces;
+using Chat.Domain;
 using Chat.Infrastructure.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -24,23 +25,18 @@ public class MetaService : IMetaService
 
     public async Task AddAsync(
         string metaJson,
-        string filename,
-        Guid id)
+        string filename)
     {
-        await _context.Files.InsertOneAsync(new BsonDocument
+        await _context.Files.InsertOneAsync(new Meta
         {
-            { "_id", id },
-            { "filename", filename },
-            { "meta", metaJson }
+            Filename = filename,
+            Data = new BsonDocument { { "meta", metaJson } }
         });
     }
 
-    public async Task<BsonDocument> GetMeta(string filename)
+    public async Task<Meta> GetMeta(string filename)
     {
-        var meta = await _context.Files.Find(new BsonDocument
-        {
-            { "filename", filename },
-        }).FirstAsync();
+        var meta = await _context.Files.Find(new BsonDocument { {"filename", filename } }).FirstAsync();
 
         if (meta == null)
             throw new FileNotFoundException(filename);

@@ -32,7 +32,6 @@ public class FileController : BaseController
         CancellationToken cancellationToken)
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
-        await _cache.SetAsync(id,)
         if (_fileProcessor.IsSupportedExtension(file.ContentType))
         { var metaData = await _fileProcessor.ExtractMetadataAsync(fileStream, file);
             _messageProducer.SendMessage(metaData); }
