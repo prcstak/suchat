@@ -1,5 +1,6 @@
 ﻿using Chat.Api.Producer;
 using Chat.Application.Interfaces;
+using Chat.Cache;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -8,20 +9,18 @@ namespace Chat.Api.Controllers;
 public class FileController : BaseController
 {
     private readonly IFileService _fileService;
-    private readonly IFileProcessor _fileProcessor;
     private readonly IMessageProducer _messageProducer;
-    private readonly IDistributedCache _cache;
+    private readonly IRedisCache _cache;
 
     public FileController(
         IFileService fileService,
-        IFileProcessor fileProcessor,
         IMessageProducer messageProducer, 
-        IDistributedCache cache)
+        IRedisCache  cache)
     {
         _fileService = fileService;
-        _fileProcessor = fileProcessor;
         _messageProducer = messageProducer;
         _cache = cache;
+        _cache.SetDatabase(Database.File);
     }
     
     [HttpPost]
@@ -32,9 +31,7 @@ public class FileController : BaseController
         CancellationToken cancellationToken)
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
-        if (_fileProcessor.IsSupportedExtension(file.ContentType))
-        { var metaData = await _fileProcessor.ExtractMetadataAsync(fileStream, file);
-            _messageProducer.SendMessage(metaData); }
+        await _cache.SetStringAsync(id.ToString(), filename); 
         
         return Ok();
     }

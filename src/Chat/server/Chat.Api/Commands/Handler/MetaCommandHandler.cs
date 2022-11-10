@@ -1,7 +1,5 @@
-﻿using System.Text;
-using Chat.Application.Interfaces;
+﻿using Chat.Application.Interfaces;
 using Chat.Cache;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace Chat.Api.Commands.Handler;
 
@@ -15,6 +13,7 @@ public class MetaCommandHandler :
     {
         _fileService = fileService;
         _cache = cache;
+        _cache.SetDatabase(Database.Meta);
     }
     
     public async Task Handle(SaveMetaCommand command)

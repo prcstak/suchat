@@ -1,6 +1,5 @@
 ﻿using Chat.Application.Extensions;
 using Chat.Application.Interfaces;
-using Chat.Application.Processors;
 using Chat.Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +13,6 @@ public static class ConfigureServices
         IConfiguration configuration)
     {
         services.AddTransient<IMessageService, MessageService>();
-        services.AddTransient<IFileProcessor, FileProcessor>();
         services.AddTransient<IFileService, FileService>();
         services.AddTransient<IMetaService, MetaService>();
         
