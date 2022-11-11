@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
+using Chat.Api.Producer;
 using Chat.Application.Interfaces;
+using Chat.Cache;
 using Chat.Common.Dto;
-using Chat.Infrastructure.Interfaces;
+using Chat.Common.Events;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -15,19 +17,29 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     private const string MessageQueueName = "chat";
     private ILogger<ConsumerHostedService> _logger;
     private readonly IMessageService _messageService;
-    private IApplicationDbContext _context;
     private readonly IConfiguration _config;
-
+    private readonly IRedisCache _redisCache;
+    private readonly MediaProducer _mediaProducer;
+    
     public ConsumerHostedService(
-        IApplicationDbContext context,
         ILogger<ConsumerHostedService> logger,
         IMessageService messageService,
-        IConfiguration config)
+        IConfiguration config,
+        IRedisCache redisCache,
+        MessageProducer messageProducer, MediaProducer mediaProducer)
     {
-        _context = context;
         _logger = logger;
         _messageService = messageService;
         _config = config;
+        _redisCache = redisCache;
+        _mediaProducer = mediaProducer;
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await base.StopAsync(cancellationToken);
+        _connection.Close();
+        _logger.LogInformation("Consumer is stopped");
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -55,17 +67,14 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         var messageConsumer = CreateMessageConsumer(cancellationToken);
+        var metaUploadedEventConsumer = CreateMetaUploadedEventConsumer(cancellationToken);
+        var fileUploadedEventConsumer = CreateFileUploadedEventConsumer(cancellationToken);
 
         _channel.BasicConsume(queue: MessageQueueName, autoAck: true, consumer: messageConsumer);
+        _channel.BasicConsume(queue: "metaUploaded", autoAck: true, consumer: metaUploadedEventConsumer);
+        _channel.BasicConsume(queue: "fileUploaded", autoAck: true, consumer: fileUploadedEventConsumer);
 
         await Task.CompletedTask;
-    }
-
-    public override async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await base.StopAsync(cancellationToken);
-        _connection.Close();
-        _logger.LogInformation("Consumer is stopped");
     }
 
     private IBasicConsumer CreateMessageConsumer(CancellationToken cancellationToken)
@@ -86,6 +95,57 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 _logger.LogWarning("Exception: " + exception.Message);
             }
         };
+        return consumer;
+    }
+    
+    private IBasicConsumer CreateMetaUploadedEventConsumer(CancellationToken cancellationToken)
+    {
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += async (model, ea) =>
+        {
+            try
+            {
+                var body = ea.Body.ToArray();
+                var meta = JsonSerializer.Deserialize<MetaUploadedEvent>(body);
+
+                var reqId = meta.RequestId.ToString();
+                await _redisCache.IncrementAsync(reqId);
+                var val = await _redisCache.GetStringAsync(reqId);
+                if (val == "2")
+                   _mediaProducer.SendMessage(reqId); 
+                    
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning("Exception: " + exception.Message);
+            }
+        };
+        
+        return consumer;
+    }
+    
+    private IBasicConsumer CreateFileUploadedEventConsumer(CancellationToken cancellationToken)
+    {
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += async (model, ea) =>
+        {
+            try
+            {
+                var body = ea.Body.ToArray();
+                var file = JsonSerializer.Deserialize<FileUploadedEvent>(body);
+                
+                var reqId = file.RequestId.ToString();
+                await _redisCache.IncrementAsync(reqId);
+                var val = await _redisCache.GetStringAsync(reqId);
+                if (val == "2")
+                    _mediaProducer.SendMessage(reqId); 
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning("Exception: " + exception.Message);
+            }
+        };
+        
         return consumer;
     }
 }

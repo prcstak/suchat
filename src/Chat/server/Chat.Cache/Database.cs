@@ -3,5 +3,6 @@
 public enum Database
 {
     File,
-    Meta
+    Meta,
+    Common
 }

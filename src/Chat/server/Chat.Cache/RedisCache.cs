@@ -6,12 +6,6 @@ public class RedisCache : IRedisCache
 {
     private IDatabase _db;
     private readonly IConnectionMultiplexer _muxer;
-
-    public RedisCache(IConnectionMultiplexer muxer)
-    {
-        _muxer = muxer;
-        _db = muxer.GetDatabase();
-    }
     
     public void SetDatabase(Database database)
     {
@@ -23,6 +17,17 @@ public class RedisCache : IRedisCache
         };
     }
 
+    public RedisCache(IConnectionMultiplexer muxer)
+    {
+        _muxer = muxer;
+        _db = muxer.GetDatabase((int) Database.Common);
+    }
+
+    public async Task IncrementAsync(string key)
+    {
+        await _db.StringIncrementAsync(key);
+    }
+    
     public async Task SetStringAsync(string key, string value)
     {
         await _db.StringSetAsync(key, value);

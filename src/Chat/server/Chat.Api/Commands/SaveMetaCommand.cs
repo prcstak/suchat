@@ -1,3 +1,3 @@
 ﻿namespace Chat.Api.Commands;
 
-public record SaveMetaCommand(string MetaJson, string Filename, Guid Id);
+public record SaveMetaCommand(string MetaJson, string Filename, Guid RequestId);

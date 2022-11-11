@@ -14,15 +14,17 @@ public class FileService : IFileService
 {
     private readonly IAmazonS3 _amazonS3;
     private readonly IConfiguration _configuration;
-    private readonly string _bucket;
-
+    private readonly string _tempBucket;
+    private readonly string _persistentBucket;
+    
     public FileService(
         IAmazonS3 amazonS3,
         IConfiguration configuration)
     {
         _amazonS3 = amazonS3;
         _configuration = configuration;
-        _bucket = _configuration["AWS:Bucket"];
+        _tempBucket = _configuration["AWS:Buckets:Temp"];
+        _persistentBucket = _configuration["AWS:Buckets:Persistent"];
     }
     
     public async Task<List<S3Bucket>> GetAllBucketsAsync()
@@ -43,7 +45,7 @@ public class FileService : IFileService
         {
             InputStream = newMemoryStream,
             Key = file.FileName,
-            BucketName = _bucket,
+            BucketName = _persistentBucket, 
             CannedACL = S3CannedACL.PublicRead
         };
 
@@ -59,7 +61,7 @@ public class FileService : IFileService
     {
         var request = new GetObjectRequest
         {
-            BucketName = _bucket,
+            BucketName = _tempBucket,
             Key = objectKey
         };
         
@@ -70,8 +72,24 @@ public class FileService : IFileService
 
     public async Task<List<S3Object>> GetAllObjectFromBucketAsync()
     {
-        var response = await _amazonS3.ListObjectsAsync(_bucket);
+        var response = await _amazonS3.ListObjectsAsync(_tempBucket);
 
         return response.S3Objects;
+    }
+
+    public async Task MoveToPersistent(string filename, CancellationToken cancellationToken)
+    {
+        var file = await _amazonS3.GetObjectAsync(filename, _tempBucket, cancellationToken);
+        
+        var uploadRequest = new TransferUtilityUploadRequest
+        {
+            InputStream = file.ResponseStream,
+            Key = file.Key,
+            BucketName = _tempBucket,
+            CannedACL = S3CannedACL.PublicRead
+        };
+
+        var fileTransferUtility = new TransferUtility(_amazonS3);
+        await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
     }
 }

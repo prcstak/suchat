@@ -1,8 +1,8 @@
 ﻿using Chat.Api.Producer;
 using Chat.Application.Interfaces;
 using Chat.Cache;
+using Chat.Common.Events;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace Chat.Api.Controllers;
 
@@ -32,17 +32,17 @@ public class FileController : BaseController
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
         await _cache.SetStringAsync(requestId.ToString(), filename); 
+        _messageProducer.SendMessage<FileUploadedEvent>(new FileUploadedEvent(filename, requestId), "file"); 
         
         return Ok();
     }
     
     [HttpGet]
     public async Task<IActionResult> DownloadObject(
-        string objectKey,
+        string filename,
         CancellationToken cancellationToken)
     {
-        // memory leak? =)
-        var file = await _fileService.DownloadObjectAsync(objectKey, cancellationToken);
+        var file = await _fileService.DownloadObjectAsync(filename, cancellationToken);
 
         return File(file.ResponseStream, file.Headers.ContentType, file.Key);
     }
