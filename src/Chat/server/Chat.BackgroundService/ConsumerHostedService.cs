@@ -32,6 +32,7 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         _messageService = messageService;
         _config = config;
         _redisCache = redisCache;
+        _redisCache.SetDatabase(Database.Common);
         _mediaProducer = mediaProducer;
     }
 
