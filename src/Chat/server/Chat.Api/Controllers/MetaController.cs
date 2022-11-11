@@ -20,9 +20,9 @@ public class MetaController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SaveMeta(string metaJson, string filename, Guid id)
+    public async Task<IActionResult> SaveMeta(string metaJson, string filename, Guid requestId)
     {
-        var command = new SaveMetaCommand(metaJson, filename, id);
+        var command = new SaveMetaCommand(metaJson, filename, requestId);
         await _metaCommandHandler.Handle(command);
 
         return Ok();

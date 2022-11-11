@@ -27,11 +27,11 @@ public class FileController : BaseController
     public async Task<IActionResult> UploadFile(
         IFormFile file,
         string filename,
-        Guid id,
+        Guid requestId,
         CancellationToken cancellationToken)
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
-        await _cache.SetStringAsync(id.ToString(), filename); 
+        await _cache.SetStringAsync(requestId.ToString(), filename); 
         
         return Ok();
     }
