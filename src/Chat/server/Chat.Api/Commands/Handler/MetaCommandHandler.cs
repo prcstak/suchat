@@ -32,6 +32,6 @@ public class MetaCommandHandler :
         _producer.SendMessage<MetaUploadedEvent>(new MetaUploadedEvent(
             command.RequestId,
             command.Filename),
-            "meta");
+            "meta-uploaded");
     }
 }

@@ -32,7 +32,7 @@ public class FileController : BaseController
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
         await _cache.SetStringAsync(requestId.ToString(), filename); 
-        _messageProducer.SendMessage<FileUploadedEvent>(new FileUploadedEvent(filename, requestId), "file"); 
+        _messageProducer.SendMessage<FileUploadedEvent>(new FileUploadedEvent(filename, requestId), "file-uploaded"); 
         
         return Ok();
     }

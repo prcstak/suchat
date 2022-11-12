@@ -71,8 +71,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         var fileUploadedEventConsumer = CreateFileUploadedEventConsumer(cancellationToken);
 
         _channel.BasicConsume(queue: MessageQueueName, autoAck: true, consumer: messageConsumer);
-        _channel.BasicConsume(queue: "metaUploaded", autoAck: true, consumer: metaUploadedEventConsumer);
-        _channel.BasicConsume(queue: "fileUploaded", autoAck: true, consumer: fileUploadedEventConsumer);
+        _channel.BasicConsume(queue: "meta-uploaded", autoAck: true, consumer: metaUploadedEventConsumer);
+        _channel.BasicConsume(queue: "file-uploaded", autoAck: true, consumer: fileUploadedEventConsumer);
 
         await Task.CompletedTask;
     }
