@@ -1,3 +1,4 @@
+using Chat.Api.Consumers;
 using Chat.Api.Extensions;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
@@ -20,6 +21,7 @@ builder.Services.AddCQRS();
 builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+builder.Services.AddHostedService<MediaUploadedDispatch>();
 
 builder.Services.AddAccessSecurity(builder.Configuration);
 

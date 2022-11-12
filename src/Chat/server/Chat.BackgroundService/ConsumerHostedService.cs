@@ -26,13 +26,12 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         IMessageService messageService,
         IConfiguration config,
         IRedisCache redisCache,
-        MessageProducer messageProducer, MediaProducer mediaProducer)
+        MediaProducer mediaProducer)
     {
         _logger = logger;
         _messageService = messageService;
         _config = config;
         _redisCache = redisCache;
-        _redisCache.SetDatabase(Database.Common);
         _mediaProducer = mediaProducer;
     }
 
@@ -110,10 +109,11 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 var meta = JsonSerializer.Deserialize<MetaUploadedEvent>(body);
 
                 var reqId = meta.RequestId.ToString();
+                
                 await _redisCache.IncrementAsync(reqId);
                 var val = await _redisCache.GetStringAsync(reqId);
                 if (val == "2")
-                   _mediaProducer.SendMessage(reqId); 
+                   _mediaProducer.SendMessage(meta.Filename, reqId); 
                     
             }
             catch (Exception exception)
@@ -139,7 +139,7 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 await _redisCache.IncrementAsync(reqId);
                 var val = await _redisCache.GetStringAsync(reqId);
                 if (val == "2")
-                    _mediaProducer.SendMessage(reqId); 
+                    _mediaProducer.SendMessage(file.Filename, reqId); 
             }
             catch (Exception exception)
             {

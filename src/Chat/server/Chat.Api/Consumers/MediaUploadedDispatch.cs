@@ -1,15 +1,19 @@
 ﻿using System.Text.Json;
+using Chat.Api.Hubs;
+using Chat.Api.Producer;
 using Chat.Application.Interfaces;
 using Chat.Cache;
+using Chat.Common.Dto;
 using Chat.Common.Events;
 using Chat.Domain;
+using Microsoft.AspNetCore.SignalR;
 using MongoDB.Bson;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace Chat.Api.Consumers;
 
-public class MediaUploadedConsumer : BackgroundService
+public class MediaUploadedDispatch : BackgroundService
 {
     private IConnection _connection;
     private IModel _channel;
@@ -19,17 +23,23 @@ public class MediaUploadedConsumer : BackgroundService
     private readonly IRedisCache _redisCache;
     private readonly IFileService _fileService;
     private readonly IMetaService _metaService;
+    private readonly IHubContext<ChatHub> _chatContext;
+    private readonly IMessageProducer _messageProducer;
 
-    public MediaUploadedConsumer(
+    public MediaUploadedDispatch(
         IConfiguration config,
         IRedisCache redisCache, 
         IFileService fileService, 
-        IMetaService metaService)
+        IMetaService metaService, 
+        IHubContext<ChatHub> chatContext, 
+        IMessageProducer messageProducer)
     {
         _config = config;
         _redisCache = redisCache;
         _fileService = fileService;
         _metaService = metaService;
+        _chatContext = chatContext;
+        _messageProducer = messageProducer;
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -68,14 +78,19 @@ public class MediaUploadedConsumer : BackgroundService
                 var mediaUploadedEvent = JsonSerializer.Deserialize<MediaUploadedEvent>(body);
 
                 _redisCache.SetDatabase(Database.Meta);
-                var meta = await _redisCache.GetStringAsync(mediaUploadedEvent.ReqId);
+                var meta = await _redisCache.GetStringAsync(mediaUploadedEvent.RequestId);
+                var author = await _redisCache.GetStringAsync(mediaUploadedEvent.Filename); 
                 
                 _redisCache.SetDatabase(Database.File);
-                var filename = await _redisCache.GetStringAsync(mediaUploadedEvent.ReqId);
+                var filename = await _redisCache.GetStringAsync(mediaUploadedEvent.RequestId);
                 
                 await _metaService.AddAsync(meta, filename);
                 await _fileService.MoveToPersistent(filename, cancellationToken);
 
+                var message = "File: " + filename; 
+                
+                await _chatContext.Clients.All.SendAsync("ReceiveMessage", author, message, DateTime.Now);
+                _messageProducer.SendMessage(new AddMessageDto(author, message), "chat");
             }
             catch (Exception exception)
             {

@@ -26,6 +26,8 @@ public class MetaCommandHandler :
     public async Task Handle(SaveMetaCommand command)
     {
         await _cache.SetStringAsync(command.RequestId.ToString(), command.MetaJson);
+        await _cache.SetStringAsync(command.Filename, command.Author);
+        
         await _fileService.AddAsync(command.MetaJson, command.Filename);
         _producer.SendMessage<MetaUploadedEvent>(new MetaUploadedEvent(
             command.RequestId,
