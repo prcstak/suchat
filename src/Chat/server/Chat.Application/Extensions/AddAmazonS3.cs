@@ -19,8 +19,7 @@ public static class AmazonExtensions
             ServiceURL = configuration["AWS:ServiceURL"]
         };
         
-        services.AddSingleton<IAmazonS3>(_ 
-            => GetS3Client(configuration, s3Config));
+        services.AddSingleton<IAmazonS3>(_ => GetS3Client(configuration, s3Config));
         
         AddDefaultFilesBucket(configuration, s3Config);
 

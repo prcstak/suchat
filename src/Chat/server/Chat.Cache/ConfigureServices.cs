@@ -18,7 +18,7 @@ public static class ConfigureServices
          },
          Password = configuration["Redis:Password"]
       };
-      
+
       services.AddSingleton<IConnectionMultiplexer>(options => ConnectionMultiplexer.Connect(configurationOptions));
       services.AddTransient<IRedisCache, RedisCache>(); 
       

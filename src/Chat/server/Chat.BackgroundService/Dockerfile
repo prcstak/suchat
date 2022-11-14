@@ -6,8 +6,12 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["Chat.BackgroundService/Chat.BackgroundService.csproj", "Chat.BackgroundService/"]
-COPY ["Chat.Infrastructure/Chat.Infrastructure.csproj", "Chat.Infrastructure/"]
+COPY ["Chat.Cache/Chat.Cache.csproj", "Chat.Cache/"]
+COPY ["Chat.Api/Chat.Api.csproj", "Chat.Api/"]
+COPY ["Chat.Application/Chat.Application.csproj", "Chat.Application/"]
+COPY ["Chat.Common/Chat.Common.csproj", "Chat.Common/"]
 COPY ["Chat.Domain/Chat.Domain.csproj", "Chat.Domain/"]
+COPY ["Chat.Infrastructure/Chat.Infrastructure.csproj", "Chat.Infrastructure/"]
 RUN dotnet restore "Chat.BackgroundService/Chat.BackgroundService.csproj"
 COPY . .
 WORKDIR "/src/Chat.BackgroundService"
