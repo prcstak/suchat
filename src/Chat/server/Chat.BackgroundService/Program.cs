@@ -9,6 +9,7 @@ var host = Host
     .ConfigureServices((context, services) =>
     {
         services.AddScoped<MessageProducer>();
+        services.AddScoped<MediaProducer>();
         services.AddApplication(context.Configuration);
         services.AddInfrastructure(context.Configuration);
         services.AddCache(context.Configuration);

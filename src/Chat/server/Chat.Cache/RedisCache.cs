@@ -36,7 +36,7 @@ public class RedisCache : IRedisCache
     public async Task<string> GetStringAsync(string key)
     {
         var value = await _db.StringGetAsync(key);
-
+        
         return value.ToString();
     }
 }

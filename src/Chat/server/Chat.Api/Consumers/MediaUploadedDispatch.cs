@@ -5,9 +5,7 @@ using Chat.Application.Interfaces;
 using Chat.Cache;
 using Chat.Common.Dto;
 using Chat.Common.Events;
-using Chat.Domain;
 using Microsoft.AspNetCore.SignalR;
-using MongoDB.Bson;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -94,7 +92,7 @@ public class MediaUploadedDispatch : BackgroundService
             }
             catch (Exception exception)
             {
-                
+                //ignore?
             }
         };
         

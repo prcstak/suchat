@@ -20,7 +20,7 @@ builder.Services.AddCQRS();
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+builder.Services.AddSingleton<IMessageProducer, MessageProducer>();
 builder.Services.AddHostedService<MediaUploadedDispatch>();
 
 builder.Services.AddAccessSecurity(builder.Configuration);

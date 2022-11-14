@@ -15,6 +15,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
     private IModel _channel;
     private ConnectionFactory _connectionFactory;
     private const string MessageQueueName = "chat";
+    private const string MetaQueueName = "meta-uploaded";
+    private const string FileQueueName = "file-uploaded";
     private ILogger<ConsumerHostedService> _logger;
     private readonly IMessageService _messageService;
     private readonly IConfiguration _config;
@@ -59,6 +61,18 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
             autoDelete: false,
             arguments: null);
         _logger.LogInformation($"[{MessageQueueName}] has started.");
+        _channel.QueueDeclare(queue: MetaQueueName,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+        _logger.LogInformation($"[{MetaQueueName}] has started.");
+        _channel.QueueDeclare(queue: FileQueueName,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+        _logger.LogInformation($"[{FileQueueName}] has started.");
 
 
         return base.StartAsync(cancellationToken);
@@ -71,8 +85,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
         var fileUploadedEventConsumer = CreateFileUploadedEventConsumer(cancellationToken);
 
         _channel.BasicConsume(queue: MessageQueueName, autoAck: true, consumer: messageConsumer);
-        _channel.BasicConsume(queue: "meta-uploaded", autoAck: true, consumer: metaUploadedEventConsumer);
-        _channel.BasicConsume(queue: "file-uploaded", autoAck: true, consumer: fileUploadedEventConsumer);
+        _channel.BasicConsume(queue: MetaQueueName, autoAck: true, consumer: metaUploadedEventConsumer);
+        _channel.BasicConsume(queue: FileQueueName, autoAck: true, consumer: fileUploadedEventConsumer);
 
         await Task.CompletedTask;
     }
