@@ -11,15 +11,18 @@ public class FileController : BaseController
     private readonly IFileService _fileService;
     private readonly IMessageProducer _messageProducer;
     private readonly IRedisCache _cache;
+    private readonly ILogger<FileController> _logger;
 
     public FileController(
         IFileService fileService,
         IMessageProducer messageProducer, 
-        IRedisCache  cache)
+        IRedisCache  cache,
+        ILogger<FileController> logger)
     {
         _fileService = fileService;
         _messageProducer = messageProducer;
         _cache = cache;
+        _logger = logger;
         _cache.SetDatabase(Database.File);
     }
     
@@ -31,7 +34,10 @@ public class FileController : BaseController
         CancellationToken cancellationToken)
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
+        _logger.LogInformation("File was uploaded: " + requestId);
+        
         await _cache.SetStringAsync(requestId.ToString(), filename); 
+        
         _messageProducer.SendMessage<FileUploadedEvent>(new FileUploadedEvent(filename, requestId), "file-uploaded"); 
         
         return Ok();

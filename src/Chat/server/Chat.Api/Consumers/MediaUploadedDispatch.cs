@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Amazon.Runtime.Internal.Util;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
 using Chat.Application.Interfaces;
@@ -23,6 +24,7 @@ public class MediaUploadedDispatch : BackgroundService
     private readonly IMetaService _metaService;
     private readonly IHubContext<ChatHub> _chatContext;
     private readonly IMessageProducer _messageProducer;
+    private readonly ILogger<MediaUploadedDispatch> _logger;
 
     public MediaUploadedDispatch(
         IConfiguration config,
@@ -30,7 +32,8 @@ public class MediaUploadedDispatch : BackgroundService
         IFileService fileService, 
         IMetaService metaService, 
         IHubContext<ChatHub> chatContext, 
-        IMessageProducer messageProducer)
+        IMessageProducer messageProducer,
+        ILogger<MediaUploadedDispatch> logger)
     {
         _config = config;
         _redisCache = redisCache;
@@ -38,6 +41,7 @@ public class MediaUploadedDispatch : BackgroundService
         _metaService = metaService;
         _chatContext = chatContext;
         _messageProducer = messageProducer;
+        _logger = logger;
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -74,6 +78,8 @@ public class MediaUploadedDispatch : BackgroundService
             {
                 var body = ea.Body.ToArray();
                 var mediaUploadedEvent = JsonSerializer.Deserialize<MediaUploadedEvent>(body);
+                
+                _logger.LogInformation("Media uploaded received: " + body);
 
                 _redisCache.SetDatabase(Database.Meta);
                 var meta = await _redisCache.GetStringAsync(mediaUploadedEvent.RequestId);

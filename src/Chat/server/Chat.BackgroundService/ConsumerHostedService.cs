@@ -100,6 +100,9 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
             {
                 var body = ea.Body.ToArray();
                 var message = JsonSerializer.Deserialize<AddMessageDto>(body);
+                
+                _logger.LogInformation("Message received: " + message); 
+                
                 await _messageService.AddAsync(
                     new AddMessageDto(message.Username, message.Body),
                     cancellationToken);
@@ -122,6 +125,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
                 var body = ea.Body.ToArray();
                 var meta = JsonSerializer.Deserialize<MetaUploadedEvent>(body);
 
+                _logger.LogInformation("Meta received: " + meta); 
+                
                 var reqId = meta.RequestId.ToString();
                 
                 await _redisCache.IncrementAsync(reqId);
@@ -148,6 +153,8 @@ public class ConsumerHostedService : Microsoft.Extensions.Hosting.BackgroundServ
             {
                 var body = ea.Body.ToArray();
                 var file = JsonSerializer.Deserialize<FileUploadedEvent>(body);
+                
+                _logger.LogInformation("File received: " + file); 
                 
                 var reqId = file.RequestId.ToString();
                 await _redisCache.IncrementAsync(reqId);
