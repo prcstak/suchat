@@ -1,5 +1,3 @@
-import {IMessages} from "../types/IMessage";
-import {AxiosResponse} from "axios";
 import $api from "../utils/api";
 
 export default class MessageService {

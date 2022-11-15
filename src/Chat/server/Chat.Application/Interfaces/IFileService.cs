@@ -10,6 +10,7 @@ public interface IFileService
 
     Task<MemoryStream> UploadFileAsync(
         IFormFile file,
+        string filename,
         CancellationToken cancellationToken);
 
     Task<GetObjectResponse> DownloadObjectAsync(
