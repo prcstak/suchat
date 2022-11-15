@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Amazon;
 using Amazon.S3;
+using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

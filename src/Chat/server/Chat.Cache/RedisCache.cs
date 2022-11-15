@@ -13,6 +13,7 @@ public class RedisCache : IRedisCache
         {
             Database.File => _muxer.GetDatabase(1),
             Database.Meta => _muxer.GetDatabase(2),
+            Database.Common => _muxer.GetDatabase(3),
             _ => throw new ArgumentException("Not supported db")
         };
     }

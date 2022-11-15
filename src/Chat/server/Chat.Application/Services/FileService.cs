@@ -46,7 +46,7 @@ public class FileService : IFileService
             InputStream = newMemoryStream,
             Key = file.FileName,
             BucketName = _persistentBucket, 
-            CannedACL = S3CannedACL.PublicRead
+            CannedACL = S3CannedACL.PublicRead,
         };
 
         var fileTransferUtility = new TransferUtility(_amazonS3);
@@ -61,7 +61,7 @@ public class FileService : IFileService
     {
         var request = new GetObjectRequest
         {
-            BucketName = _tempBucket,
+            BucketName = _persistentBucket, 
             Key = objectKey
         };
         
@@ -80,7 +80,7 @@ public class FileService : IFileService
     public async Task MoveToPersistent(string filename, CancellationToken cancellationToken)
     {
         var file = await _amazonS3.GetObjectAsync(filename, _tempBucket, cancellationToken);
-        
+
         var uploadRequest = new TransferUtilityUploadRequest
         {
             InputStream = file.ResponseStream,
