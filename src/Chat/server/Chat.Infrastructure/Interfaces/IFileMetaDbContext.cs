@@ -1,11 +1,9 @@
 ﻿using Chat.Domain;
-using MongoDB.Bson;
 using MongoDB.Driver;
-using File = Chat.Domain.File;
 
 namespace Chat.Infrastructure.Interfaces;
 
 public interface IFileMetaDbContext
 {
-    IMongoCollection<BsonDocument> Files { get; }
+    IMongoCollection<Meta> Files { get; }
 }

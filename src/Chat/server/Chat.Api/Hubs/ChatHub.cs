@@ -1,7 +1,6 @@
 ﻿using Chat.Api.Producer;
 using Chat.Common.Dto;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using Chat.Common.Events;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Chat.Api.Hubs;
@@ -19,6 +18,6 @@ public class ChatHub : Hub
     public async Task SendMessage(string username, string message)
     {
         await Clients.All.SendAsync("ReceiveMessage", username, message, DateTime.Now);
-        _producer.SendMessage(new AddMessageDto(username, message));
+        _producer.SendMessage(new MessageUploadedEvent(username, message), "chat");
     }
 }

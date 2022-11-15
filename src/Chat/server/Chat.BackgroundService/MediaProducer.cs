@@ -1,38 +1,41 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Chat.Domain;
+using Chat.Common.Events;
 using RabbitMQ.Client;
 
-namespace Chat.Api.Producer;
+namespace Chat.BackgroundService;
 
-public class MessageProducer : IMessageProducer
+public class MediaProducer 
 {
     private readonly IConfiguration _config;
 
-    public MessageProducer(IConfiguration config)
+    public MediaProducer(IConfiguration config)
     {
         _config = config;
     }
-    public void SendMessage<T>(T message, string queue)
+    
+    public void SendMessage(string filename, string requestId)
     {
         var factory = new ConnectionFactory
         {
             HostName = _config["RabbitMQ:Hostname"],
             Port = Convert.ToInt32(_config["RabbitMQ:Port"]),
         };
+        
         var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
-        channel.QueueDeclare(queue: queue,
+        
+        channel.QueueDeclare(queue: "media-uploaded",
             durable: false,
             exclusive: false,
             autoDelete: false,
             arguments: null);
 
-        var jsonMessage = JsonSerializer.Serialize(message);
+        var jsonMessage = JsonSerializer.Serialize<MediaUploadedEvent>(new MediaUploadedEvent(filename, requestId));
         var body = Encoding.UTF8.GetBytes(jsonMessage);
 
         channel.BasicPublish(exchange: "",
-            routingKey: queue,
+            routingKey: "media-uploaded",
             basicProperties: null,
             body: body);
     }

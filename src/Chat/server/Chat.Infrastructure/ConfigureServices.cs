@@ -27,7 +27,7 @@ public static class ConfigureServices
         
         services.AddSingleton<IMongoDbConfiguration, MongoDbConfiguration>();
 
-        services.AddScoped<IFileMetaDbContext, FileMetaDbContext>();
+        services.AddSingleton<IFileMetaDbContext, FileMetaDbContext>();
         
         return services;
     }

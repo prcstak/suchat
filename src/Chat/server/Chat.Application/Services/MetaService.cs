@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using Chat.Common.Exceptions;
+﻿using Chat.Application.Interfaces;
+using Chat.Domain;
 using Chat.Infrastructure.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -7,7 +7,7 @@ using FileNotFoundException = Chat.Common.Exceptions.FileNotFoundException;
 
 namespace Chat.Application.Services;
 
-public class MetaService
+public class MetaService : IMetaService
 {
     private readonly IFileMetaDbContext _context;
 
@@ -16,27 +16,27 @@ public class MetaService
         _context = context;
     }
 
-    public async Task AddAsync(
-        IReadOnlyCollection<MetadataExtractor.Directory> meta,
-        string filename)
+    public async Task DeleteAsync(string filename)
     {
-        var serializedMeta = JsonSerializer.Serialize(meta);
-        var metaDocument = new BsonDocument
-        {
-            { "id", Guid.NewGuid() },
-            { "filename", filename },
-            { "meta", serializedMeta }
-        };
-        
-        await _context.Files.InsertOneAsync(metaDocument);
+        var result = await _context.Files.DeleteOneAsync(new BsonDocument("filename", filename));
+        if (!result.IsAcknowledged)
+            throw new FileNotFoundException(filename);
     }
 
-    public async Task<BsonDocument> GetMeta(string filename)
+    public async Task AddAsync(
+        string metaJson,
+        string filename)
     {
-        var meta = await _context.Files.Find(new BsonDocument
+        await _context.Files.InsertOneAsync(new Meta
         {
-            { "filename", filename },
-        }).FirstAsync();
+            Filename = filename,
+            Data = new BsonDocument { { "meta", metaJson } }
+        });
+    }
+
+    public async Task<Meta> GetMeta(string filename)
+    {
+        var meta = await _context.Files.Find(new BsonDocument { {"filename", filename } }).FirstAsync();
 
         if (meta == null)
             throw new FileNotFoundException(filename);

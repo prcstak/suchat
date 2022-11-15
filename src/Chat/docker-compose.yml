@@ -9,13 +9,27 @@ services:
     container_name: 'server'
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
+
       - RabbitMQ__Hostname=rabbitmq
       - RabbitMQ__Port=5672
+
       - AWS__ServiceURL=http://s3:8000
       - AWS__AccessKey=access
       - AWS__AccessSecret=secret
-      - AWS__Bucket=files
+      - AWS__Buckets__Temp=files-temp
+      - AWS__Buckets__Persistent=files-persistent
+
+      - Redis__Port=6379
+      - Redis__Password=password
+      - Redis__Host=cache
+
+      - MongoDB__Database=meta
+      - MongoDB__Host=metastorage
+      - MongoDB__Port=27017
+      - MongoDB__User=mongo
+      - MongoDB__Password=admin
     ports:
       - "5225:80"
     depends_on:
@@ -45,8 +59,19 @@ services:
       dockerfile: ./Chat.BackgroundService/Dockerfile
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
+      
       - RabbitMQ__Hostname=rabbitmq
       - RabbitMQ__Port=5672
+
+      - Redis__Port=6379
+      - Redis__Password=password
+      - Redis__Host=cache
+
+      - MongoDB__Database=meta
+      - MongoDB__Host=metastorage
+      - MongoDB__Port=27017
+      - MongoDB__User=mongo
+      - MongoDB__Password=admin
     ports:
       - "8001:80"
     restart: always
@@ -85,3 +110,10 @@ services:
       - S3BACKEND=mem
       - ENDPOINT=s3
     restart: always
+
+  cache:
+    image: 'redis:latest'
+    ports: 
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=password

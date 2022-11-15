@@ -1,4 +1,5 @@
-﻿using Chat.Infrastructure.Interfaces;
+﻿using Chat.Domain;
+using Chat.Infrastructure.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using FileNotFoundException = Chat.Common.Exceptions.FileNotFoundException;
@@ -14,7 +15,7 @@ public class MetaQueryHandler : IQueryHandler<GetMetaQuery, BsonDocument>
         _context = context;
     }
     
-    public async Task<BsonDocument> Handle(GetMetaQuery query)
+    public async Task<Meta> Handle(GetMetaQuery query)
     {
         var meta = await _context.Files
             .Find(new BsonDocument("filename", query.Filename))

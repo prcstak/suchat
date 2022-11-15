@@ -1,11 +1,10 @@
-using Chat.Api.Commands.Handler;
+using Chat.Api.Consumers;
 using Chat.Api.Extensions;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
-using Chat.Api.Queries.Handler;
 using Chat.Infrastructure;
 using Chat.Application;
-using Microsoft.AspNetCore.Diagnostics;
+using Chat.Cache;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +14,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddCache(builder.Configuration);
 
 builder.Services.AddCQRS();
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+builder.Services.AddSingleton<IMessageProducer, MessageProducer>();
+builder.Services.AddHostedService<MediaUploadedDispatch>();
 
 builder.Services.AddAccessSecurity(builder.Configuration);
 

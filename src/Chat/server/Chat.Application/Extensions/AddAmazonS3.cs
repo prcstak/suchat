@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Amazon;
 using Amazon.S3;
+using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +20,7 @@ public static class AmazonExtensions
             ServiceURL = configuration["AWS:ServiceURL"]
         };
         
-        services.AddSingleton<IAmazonS3>(_ 
-            => GetS3Client(configuration, s3Config));
+        services.AddSingleton<IAmazonS3>(_ => GetS3Client(configuration, s3Config));
         
         AddDefaultFilesBucket(configuration, s3Config);
 
@@ -32,11 +32,21 @@ public static class AmazonExtensions
         try
         {
             var s3Client = GetS3Client(configuration, s3Config);
-            await s3Client.PutBucketAsync(configuration["AWS:Bucket"]);
+            await s3Client.PutBucketAsync(configuration["AWS:Buckets:Temp"]);
         }
         catch (Exception e)
         {
-            //ignore
+            // ignore
+        }
+
+        try
+        {
+            var s3Client = GetS3Client(configuration, s3Config);
+            await s3Client.PutBucketAsync(configuration["AWS:Buckets:Persistent"]);
+        }
+        catch (Exception e)
+        {
+            // ignore
         }
     }
 
