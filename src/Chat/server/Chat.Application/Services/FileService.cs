@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime.Internal.Util;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Chat.Application.Interfaces;
@@ -13,7 +14,6 @@ namespace Chat.Application.Services;
 public class FileService : IFileService
 {
     private readonly IAmazonS3 _amazonS3;
-    private readonly IConfiguration _configuration;
     private readonly string _tempBucket;
     private readonly string _persistentBucket;
     
@@ -22,9 +22,8 @@ public class FileService : IFileService
         IConfiguration configuration)
     {
         _amazonS3 = amazonS3;
-        _configuration = configuration;
-        _tempBucket = _configuration["AWS:Buckets:Temp"];
-        _persistentBucket = _configuration["AWS:Buckets:Persistent"];
+        _tempBucket = configuration["AWS:Buckets:Temp"];
+        _persistentBucket = configuration["AWS:Buckets:Persistent"];
     }
     
     public async Task<List<S3Bucket>> GetAllBucketsAsync()
@@ -79,11 +78,20 @@ public class FileService : IFileService
 
     public async Task MoveToPersistent(string filename, CancellationToken cancellationToken)
     {
-        var file = await _amazonS3.GetObjectAsync(filename, _tempBucket, cancellationToken);
-
+        var request = new GetObjectRequest
+        {
+            BucketName = _tempBucket, 
+            Key = filename 
+        }; 
+        
+        var file = await _amazonS3.GetObjectAsync(request, cancellationToken);
+        await using var memStream = new MemoryStream();
+        await file.ResponseStream.CopyToAsync(memStream, cancellationToken);
+        memStream.Seek(0, SeekOrigin.Begin);    
+        
         var uploadRequest = new TransferUtilityUploadRequest
         {
-            InputStream = file.ResponseStream,
+            InputStream = memStream, 
             Key = file.Key,
             BucketName = _persistentBucket,
             CannedACL = S3CannedACL.PublicRead

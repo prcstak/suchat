@@ -79,7 +79,7 @@ public class MediaUploadedDispatch : BackgroundService
                 var body = ea.Body.ToArray();
                 var mediaUploadedEvent = JsonSerializer.Deserialize<MediaUploadedEvent>(body);
                 
-                _logger.LogInformation("Media uploaded received: " + body);
+                _logger.LogInformation("Media uploaded received: " + mediaUploadedEvent);
 
                 _redisCache.SetDatabase(Database.Meta);
                 var meta = await _redisCache.GetStringAsync(mediaUploadedEvent.RequestId);
