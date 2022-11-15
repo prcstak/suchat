@@ -1,6 +1,7 @@
 import {Button, Form, Row, Stack} from "react-bootstrap";
 import React, {useState} from 'react';
-import api from "../../utils/api.js";
+import {v4} from 'uuid';
+import $api from "../../utils/api.js";
 
 const inputType = {
     text: "text",
@@ -32,10 +33,18 @@ function InputGroup({user, connection}) {
         else {
             let formData = new FormData();
             formData.append("file", filesInput[0]);
-            await api.post('/File', formData, {
+            let filename = filesInput[0].name;
+            let fileId = `${Date.now().toString()}-${filename}`;
+            let meta = "{}";
+            let id = v4();
+            await $api.post('/File', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
+                params: {"filename": fileId, "requestId": id}
+            });
+            await $api.post('/Meta', {},{
+                params: {"metaJson": meta, "filename": fileId,"requestId": id, "author": user}
             });
             setFilesInput(null);
         }

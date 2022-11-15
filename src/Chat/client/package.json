@@ -15,7 +15,9 @@
     "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
     "react-scroll-to-bottom": "^4.2.0",
-    "styled-components": "^5.3.6"
+    "react-uuid": "^2.0.0",
+    "styled-components": "^5.3.6",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",

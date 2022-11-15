@@ -33,7 +33,7 @@ public class FileController : BaseController
         Guid requestId,
         CancellationToken cancellationToken)
     {
-        await using var fileStream = await _fileService.UploadFileAsync(file, cancellationToken);
+        await using var fileStream = await _fileService.UploadFileAsync(file, filename, cancellationToken);
         _logger.LogInformation("File was uploaded: " + requestId);
         
         await _cache.SetStringAsync(requestId.ToString(), filename); 

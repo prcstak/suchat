@@ -35,6 +35,7 @@ public class FileService : IFileService
 
     public async Task<MemoryStream> UploadFileAsync(
         IFormFile file,
+        string filename,
         CancellationToken cancellationToken)
     {
         await using var newMemoryStream = new MemoryStream();
@@ -43,7 +44,7 @@ public class FileService : IFileService
         var uploadRequest = new TransferUtilityUploadRequest
         {
             InputStream = newMemoryStream,
-            Key = file.FileName,
+            Key = filename,
             BucketName = _tempBucket, 
             CannedACL = S3CannedACL.PublicRead,
         };
@@ -71,7 +72,7 @@ public class FileService : IFileService
 
     public async Task<List<S3Object>> GetAllObjectFromBucketAsync()
     {
-        var response = await _amazonS3.ListObjectsAsync(_tempBucket);
+        var response = await _amazonS3.ListObjectsAsync(_persistentBucket);
 
         return response.S3Objects;
     }

@@ -98,7 +98,7 @@ public class MediaUploadedDispatch : BackgroundService
             }
             catch (Exception exception)
             {
-                _logger.LogWarning("Exception: " + exception.Message);
+                _logger.LogWarning("Exception: " + exception);
             }
         };
         
