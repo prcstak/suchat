@@ -88,8 +88,8 @@ public class MediaUploadedDispatch : BackgroundService
                 _redisCache.SetDatabase(Database.File);
                 var filename = await _redisCache.GetStringAsync(mediaUploadedEvent.RequestId);
                 
-                await _metaService.AddAsync(meta, filename);
                 await _fileService.MoveToPersistent(filename, cancellationToken);
+                await _metaService.AddAsync(meta, filename);
 
                 var message = "File: " + filename; 
                 
