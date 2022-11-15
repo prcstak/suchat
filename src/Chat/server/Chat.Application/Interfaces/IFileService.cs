@@ -19,4 +19,5 @@ public interface IFileService
     Task<List<S3Object>> GetAllObjectFromBucketAsync();
 
     Task MoveToPersistent(string filename, CancellationToken cancellationToken);
+    Task<ListBucketsResponse> GetAllBuckets();
 }

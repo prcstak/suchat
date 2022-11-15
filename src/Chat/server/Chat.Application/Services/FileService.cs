@@ -45,7 +45,7 @@ public class FileService : IFileService
         {
             InputStream = newMemoryStream,
             Key = file.FileName,
-            BucketName = _persistentBucket, 
+            BucketName = _tempBucket, 
             CannedACL = S3CannedACL.PublicRead,
         };
 
@@ -85,11 +85,16 @@ public class FileService : IFileService
         {
             InputStream = file.ResponseStream,
             Key = file.Key,
-            BucketName = _tempBucket,
+            BucketName = _persistentBucket,
             CannedACL = S3CannedACL.PublicRead
         };
 
         var fileTransferUtility = new TransferUtility(_amazonS3);
         await fileTransferUtility.UploadAsync(uploadRequest, cancellationToken);
+    }
+
+    public async Task<ListBucketsResponse> GetAllBuckets()
+    {
+        return await _amazonS3.ListBucketsAsync();
     }
 }

@@ -61,4 +61,11 @@ public class FileController : BaseController
 
         return Ok(objects);
     }
+
+    [HttpGet]
+    [Route("list_buckets")]
+    public async Task<IActionResult> GetAllBuckets()
+    {
+        return Ok(await _fileService.GetAllBuckets());
+    }
 }

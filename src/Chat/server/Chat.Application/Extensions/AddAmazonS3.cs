@@ -33,6 +33,15 @@ public static class AmazonExtensions
         {
             var s3Client = GetS3Client(configuration, s3Config);
             await s3Client.PutBucketAsync(configuration["AWS:Buckets:Temp"]);
+        }
+        catch (Exception e)
+        {
+            // ignore
+        }
+
+        try
+        {
+            var s3Client = GetS3Client(configuration, s3Config);
             await s3Client.PutBucketAsync(configuration["AWS:Buckets:Persistent"]);
         }
         catch (Exception e)

@@ -103,6 +103,7 @@ public class MediaUploadedDispatch : BackgroundService
         };
         
         _channel.BasicConsume(queue: MessageQueueName, autoAck: true, consumer: consumer);
+        
         await Task.CompletedTask;
     }
 }
