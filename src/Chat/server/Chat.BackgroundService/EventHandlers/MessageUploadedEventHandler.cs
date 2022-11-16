@@ -32,7 +32,7 @@ public class MessageUploadedEventHandler : BaseEventHandler<MessageUploadedEvent
                 _logger.LogInformation("Message received: " + message); 
                 
                 await _messageService.AddAsync(
-                    new AddMessageDto(message.Username, message.Body),
+                    new AddMessageDto(message.Username, message.Body, message.IsFile),
                     cancellationToken);
             }
             catch (Exception exception)

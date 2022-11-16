@@ -16,7 +16,8 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
             connection.start()
                 .then(_ => {
                     console.log('Connected!');
-                    onReceiveMessage()
+                    onReceiveMessage();
+                    onReceiveFile();
                 })
                 .catch(e => console.log('Connection failed: ', e));
         }
@@ -54,12 +55,23 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
         api.post(`Message/history?offset=${offset}&limit=${limit}`).then((result) => {
             if (result.data.messages.length !== 0) {
                 result.data['messages'].map((mes) => {
-                    updatedChat.push({
-                        message: mes.body,
-                        timestamp: mes.created,
-                        isMine: mes.username === user,
-                        user: mes.username
-                    });
+                    console.log(mes.isFile)
+                    if (!mes.isFile) {
+                        updatedChat.push({
+                            message: mes.body,
+                            timestamp: mes.created,
+                            isMine: mes.username === user,
+                            user: mes.username
+                        });
+                    } else {
+                        let link = "http://localhost:8000/files-persistent/" + mes.body
+                        updatedChat.push({
+                            message: <a href={link} target="_blank">{mes.body}</a>,
+                            timestamp: mes.created,
+                            isMine: mes.username === user,
+                            user: mes.username
+                        });
+                    }
                 });
                 setOffset(offset + 10);
                 setLimit(limit + 10);
@@ -75,6 +87,15 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
             setChatHistory(updatedChat);
         });
     }
+
+    const onReceiveFile = () => {
+        connection.on('ReceiveFile', (u, m, t) => {
+            let link = "http://localhost:8000/files-persistent/" + m
+            const updatedChat = [...latestChat.current];
+            updatedChat.push({message: <a href={link} target="_blank">{m}</a>, timestamp: t, isMine: user === u, user: u});
+            setChatHistory(updatedChat);
+        })
+    };
 
     return (
         <Card onScroll={handleScroll} className="hideScroll" style={{

@@ -18,6 +18,6 @@ public class ChatHub : Hub
     public async Task SendMessage(string username, string message)
     {
         await Clients.All.SendAsync("ReceiveMessage", username, message, DateTime.Now);
-        _producer.SendMessage(new MessageUploadedEvent(username, message), "chat");
+        _producer.SendMessage(new MessageUploadedEvent(username, message, false), "chat");
     }
 }

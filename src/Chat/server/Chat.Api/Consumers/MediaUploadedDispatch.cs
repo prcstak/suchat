@@ -91,10 +91,8 @@ public class MediaUploadedDispatch : BackgroundService
                 await _fileService.MoveToPersistent(filename, cancellationToken);
                 await _metaService.AddAsync(meta, filename);
 
-                var message = "File: " + filename; 
-                
-                await _chatContext.Clients.All.SendAsync("ReceiveMessage", author, message, DateTime.Now);
-                _messageProducer.SendMessage(new AddMessageDto(author, message), "chat");
+                await _chatContext.Clients.All.SendAsync("ReceiveFile", author, filename, DateTime.Now);
+                _messageProducer.SendMessage(new AddMessageDto(author, filename, true), "chat");
             }
             catch (Exception exception)
             {

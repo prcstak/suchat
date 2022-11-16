@@ -8,4 +8,5 @@ public class Message
     
     public string Created { get; set; }
     public string Username { get; set; }
+    public bool IsFile { get; set; }
 }
