@@ -8,10 +8,12 @@ namespace Chat.Api.Producer;
 public class MessageProducer : IMessageProducer
 {
     private readonly IConfiguration _config;
+    private readonly ILogger<MessageProducer> _logger;
 
-    public MessageProducer(IConfiguration config)
+    public MessageProducer(IConfiguration config, ILogger<MessageProducer> logger)
     {
         _config = config;
+        _logger = logger;
     }
     public void SendMessage<T>(T message, string queue)
     {
@@ -29,6 +31,7 @@ public class MessageProducer : IMessageProducer
             arguments: null);
 
         var jsonMessage = JsonSerializer.Serialize(message);
+        _logger.LogInformation(jsonMessage);
         var body = Encoding.UTF8.GetBytes(jsonMessage);
 
         channel.BasicPublish(exchange: "",
