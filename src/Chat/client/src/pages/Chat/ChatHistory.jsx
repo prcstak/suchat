@@ -55,7 +55,7 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
         api.post(`Message/history?offset=${offset}&limit=${limit}`).then((result) => {
             if (result.data.messages.length !== 0) {
                 result.data['messages'].map((mes) => {
-                    console.log(mes.isFile)
+                    console.log(mes)
                     if (!mes.isFile) {
                         updatedChat.push({
                             message: mes.body,
