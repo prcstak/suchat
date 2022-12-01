@@ -78,16 +78,17 @@ function InputGroup({user, connection}) {
             let filename = filesInput[0].name;
             let fileId = `${Date.now().toString()}-${filename}`;
             let id = v4();
-            await $api.post('/File', formData, {
+            let filePost = $api.post('/File', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
                 params: {"filename": fileId, "requestId": id}
             });
-            await $api.post('/Meta', {},{
+            let metaPost =  $api.post('/Meta', {},{
                 params: {"metaJson": metadata, "filename": fileId,"requestId": id, "author": user}
             });
 
+            await Promise.all([filePost, metaPost]);
 
             setFilesInput(null);
     }
