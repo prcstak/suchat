@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {v4} from 'uuid';
 import $api from "../../utils/api.js";
 import FileExtensions from "../../consts/fileExtensions.js";
-import ImageMeta from "../../utils/metaTemplates.js";
+import MetaTemplates from "../../utils/metaTemplates.js";
 
 const inputType = {
     text: "text",
@@ -19,10 +19,8 @@ function InputGroup({user, connection}) {
     const [formFields, setFormFields] = useState([]);
 
     const handleClose = async ()  => {
-        console.log(metadata)
-        console.log(formFields)
+        setShow(false);
         await sendFile();
-        setShow(false)
     };
     const handleShow = () => setShow(true);
 
@@ -39,9 +37,21 @@ function InputGroup({user, connection}) {
             console.log(extension)
             let template = [];
             if (FileExtensions.image.includes(extension)) {
-                template = ImageMeta;
-
+                template = MetaTemplates.ImageMeta;
             }
+            else if (FileExtensions.video.includes(extension)) {
+                template = MetaTemplates.VideoMeta;
+            }
+            else if (FileExtensions.music.includes(extension)) {
+                template = MetaTemplates.MusicMeta;
+            }
+            else if (FileExtensions.document.includes(extension)) {
+                template = MetaTemplates.DocumentMeta;
+            }
+            else if (FileExtensions.pdf.includes(extension)) {
+                template = MetaTemplates.PdfMeta;
+            }
+
             setFormFields(template);
             let meta = {};
             template.map(field => {
@@ -103,17 +113,18 @@ function InputGroup({user, connection}) {
 
                     formFields.map(field => {
                         return <>
-                            <Modal.Body key={field}>{field}</Modal.Body>
-                            <input
-                                name={field}
-                                style={{padding: 10}}
-                                placeholder={field}
-                                onChange={e => {
-                                    let meta = metadata;
-                                    meta[e.target.name] = e.target.value;
-                                    setMetadata(meta)
-                                }}
-                            />
+                            <Modal.Body key={field}>
+                                <input
+                                    name={field}
+                                    style={{padding: 10}}
+                                    placeholder={field}
+                                    onChange={e => {
+                                        let meta = metadata;
+                                        meta[e.target.name] = e.target.value;
+                                        setMetadata(meta)
+                                    }}
+                                />
+                            </Modal.Body>
                         </>
                     })
             }
