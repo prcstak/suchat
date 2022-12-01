@@ -113,8 +113,8 @@ function InputGroup({user, connection}) {
             {
 
                     formFields.map(field => {
-                        return <>
-                            <Modal.Body key={field}>
+                        return <div key={field}>
+                            <Modal.Body>
                                 <input
                                     name={field}
                                     style={{padding: 10}}
@@ -126,7 +126,7 @@ function InputGroup({user, connection}) {
                                     }}
                                 />
                             </Modal.Body>
-                        </>
+                        </div>
                     })
             }
             <Modal.Footer>
