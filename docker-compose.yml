@@ -4,7 +4,7 @@ services:
 
   server:
     build:
-      context: ./server
+      context: ./Spotify.Support/server
       dockerfile: ./Chat.Api/Dockerfile
     container_name: 'server'
     environment:
@@ -39,7 +39,7 @@ services:
 
   client:
     build:
-      context: ./client
+      context: ./Spotify.Support/client
       dockerfile: ./Dockerfile
     environment:
       - HOST=0.0.0.0
@@ -55,7 +55,7 @@ services:
 
   mqconsumer:
     build:
-      context: ./server
+      context: ./Spotify.Support/server
       dockerfile: ./Chat.BackgroundService/Dockerfile
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=Chat;Username=postgres;Password=admin
