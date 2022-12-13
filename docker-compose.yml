@@ -2,6 +2,38 @@ version: '3.8'
 
 services:
 
+  spotify-client:
+    build:
+      context: ./src/Spotify.Client/UI
+      dockerfile: ./Dockerfile
+    container_name: 'spotify-client'
+    ports:
+      - 7057:7057
+
+  spotify-server:
+    build:
+      context: ./src/Spotify.Backend/src/DB
+      dockerfile: ./Dockerfile
+    container_name: 'spotify-server'
+    ports:
+      - 7030:7030
+
+  spotify-admindashboard-client:
+    build:
+      context: ./src/Spotify.AdminDashboard/admin-ui
+      dockerfile: ./Dockerfile
+    container_name: 'spotify-admindashboard-client'
+    ports:
+      - 7081:7081
+
+  spotify-admindashboard-server:
+    build:
+      context: ./src/Spotify.AdminDashboard/admin-api
+      dockerfile: ./Dockerfile
+    container_name: 'spotify-admindashboard-server'
+    ports:
+      - 7080:7080
+
   server:
     build:
       context: ./src/Spotify.Support/server
