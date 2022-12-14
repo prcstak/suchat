@@ -4,7 +4,7 @@ services:
 
   spotify-client:
     build:
-      context: ./src/Spotify.Client/UI
+      context: ./src/Spotify.Client/UI/
       dockerfile: ./Dockerfile
     container_name: 'spotify-client'
     ports:
@@ -12,15 +12,17 @@ services:
 
   spotify-server:
     build:
-      context: ./src/Spotify.Backend/src/DB
+      context: ./src/Spotify.Backend/src/DB/
       dockerfile: ./Dockerfile
     container_name: 'spotify-server'
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=SpotifyServer;Username=postgres;Password=admin
     ports:
       - 7030:7030
 
   spotify-admindashboard-client:
     build:
-      context: ./src/Spotify.AdminDashboard/admin-ui
+      context: ./src/Spotify.AdminDashboard/admin-ui/
       dockerfile: ./Dockerfile
     container_name: 'spotify-admindashboard-client'
     ports:
@@ -28,7 +30,7 @@ services:
 
   spotify-admindashboard-server:
     build:
-      context: ./src/Spotify.AdminDashboard/admin-api
+      context: ./src/Spotify.AdminDashboard/admin-api/
       dockerfile: ./Dockerfile
     container_name: 'spotify-admindashboard-server'
     ports:
