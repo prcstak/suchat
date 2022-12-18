@@ -5,3 +5,4 @@
 [submodule "Spotify.Client"] 
   path = src/Spotify.Client
   url = https://github.com/punkrelique/spotify-clone.git
+  branch = dotnet-task
