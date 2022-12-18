@@ -30,8 +30,9 @@ public class Rooms
         room.Value.Status = RoomStatus.Closed;
     }
 
-    public List<KeyValuePair<string, UserConnection>> GetAllWaiting() => 
+    public List<string> GetAllWaiting() => 
         _rooms
             .Where(room => room.Value.Status == RoomStatus.Waiting)
+            .Select(room => room.Value.Username)
             .ToList();
 }
