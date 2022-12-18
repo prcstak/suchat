@@ -14,7 +14,7 @@ public class MediaProducer
         _config = config;
     }
     
-    public void SendMessage(string filename, string requestId)
+    public void SendMessage(string filename, string requestId, string Room)
     {
         var factory = new ConnectionFactory
         {
@@ -31,7 +31,7 @@ public class MediaProducer
             autoDelete: false,
             arguments: null);
 
-        var jsonMessage = JsonSerializer.Serialize<MediaUploadedEvent>(new MediaUploadedEvent(filename, requestId));
+        var jsonMessage = JsonSerializer.Serialize<MediaUploadedEvent>(new MediaUploadedEvent(filename, requestId, Room));
         var body = Encoding.UTF8.GetBytes(jsonMessage);
 
         channel.BasicPublish(exchange: "",

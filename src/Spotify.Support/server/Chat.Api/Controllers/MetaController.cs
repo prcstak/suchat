@@ -24,9 +24,10 @@ public class MetaController : BaseController
         string metaJson, 
         string filename, 
         Guid requestId,
-        string author)
+        string author,
+        string room)
     {
-        var command = new SaveMetaCommand(metaJson, filename, requestId, author);
+        var command = new SaveMetaCommand(metaJson, filename, requestId, author, room);
         await _metaCommandHandler.Handle(command);
 
         return Ok();

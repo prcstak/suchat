@@ -1,6 +1,5 @@
 ﻿using Chat.Api.Producer;
 using Chat.Application.Interfaces;
-using Chat.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chat.Api.Controllers;

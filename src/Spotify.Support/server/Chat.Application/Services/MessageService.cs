@@ -22,7 +22,8 @@ public class MessageService : IMessageService
             Body = addMessageDto.Body,
             Created = DateTime.Now.ToString("s"),
             Username = addMessageDto.Username,
-            IsFile = addMessageDto.IsFile
+            IsFile = addMessageDto.IsFile,
+            Room = addMessageDto.Room
         };
 
         await _context.Messages.AddAsync(message, cancellationToken);

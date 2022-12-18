@@ -92,7 +92,7 @@ public class MediaUploadedDispatch : BackgroundService
                 await _metaService.AddAsync(meta, filename);
 
                 await _chatContext.Clients.All.SendAsync("ReceiveFile", author, filename, DateTime.Now);
-                _messageProducer.SendMessage(new AddMessageDto(author, filename, true), "chat");
+                _messageProducer.SendMessage(new AddMessageDto(author, filename, true, mediaUploadedEvent.Room), "chat");
             }
             catch (Exception exception)
             {

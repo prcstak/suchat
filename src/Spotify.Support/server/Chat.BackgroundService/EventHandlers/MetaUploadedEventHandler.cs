@@ -41,7 +41,7 @@ public class MetaUploadedEventHandler : BaseEventHandler<MetaUploadedEvent>
                 _logger.LogInformation($"ReqId value in cache is [{val}]");
                 
                 if (val == "2")
-                    _mediaProducer.SendMessage(meta.Filename, reqId); 
+                    _mediaProducer.SendMessage(meta.Filename, reqId, meta.Room); 
             }
             catch (Exception exception)
             {

@@ -42,7 +42,7 @@ public class FileUploadedEventHandler : BaseEventHandler<FileUploadedEvent>
                 _logger.LogInformation($"ReqId value in cache is [{val}]");
                 
                 if (val == "2")
-                    _mediaProducer.SendMessage(file.Filename, reqId); 
+                    _mediaProducer.SendMessage(file.Filename, reqId, file.Room); 
             }
             catch (Exception exception)
             {

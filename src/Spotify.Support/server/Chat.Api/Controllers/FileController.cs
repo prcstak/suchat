@@ -31,14 +31,15 @@ public class FileController : BaseController
         IFormFile file,
         string filename,
         Guid requestId,
+        string room,
         CancellationToken cancellationToken)
     {
         await using var fileStream = await _fileService.UploadFileAsync(file, filename, cancellationToken);
         _logger.LogInformation("File was uploaded: " + requestId);
         
-        await _cache.SetStringAsync(requestId.ToString(), filename); 
+        await _cache.SetStringAsync(requestId.ToString(), filename);
         
-        _messageProducer.SendMessage<FileUploadedEvent>(new FileUploadedEvent(filename, requestId), "file-uploaded"); 
+        _messageProducer.SendMessage<FileUploadedEvent>(new FileUploadedEvent(filename, requestId, room), "file-uploaded"); 
         
         return Ok();
     }

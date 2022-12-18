@@ -1,3 +1,3 @@
 ﻿namespace Chat.Common.Events;
 
-public record FileUploadedEvent(string Filename, Guid RequestId) : IEvent; 
+public record FileUploadedEvent(string Filename, Guid RequestId, string Room) : IEvent; 
