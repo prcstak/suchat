@@ -16,25 +16,10 @@ services:
       dockerfile: ./Dockerfile
     container_name: 'spotify-server'
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=SpotifyServer;Username=postgres;Password=admin
     ports:
       - 7030:80
-
-  spotify-admindashboard-client:
-    build:
-      context: ./src/Spotify.AdminDashboard/admin-ui/
-      dockerfile: ./Dockerfile
-    container_name: 'spotify-admindashboard-client'
-    ports:
-      - 8081:8081
-
-  spotify-admindashboard-server:
-    build:
-      context: ./src/Spotify.AdminDashboard/admin-api/
-      dockerfile: ./Dockerfile
-    container_name: 'spotify-admindashboard-server'
-    ports:
-      - 8080:8080
 
   server:
     build:

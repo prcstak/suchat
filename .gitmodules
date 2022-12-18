@@ -1,7 +1,3 @@
-[submodule "Spotify.AdminDashboard"] 
-  path = src/Spotify.AdminDashboard
-  url = https://github.com/punkrelique/admin-dashboard.git
-
 [submodule "Spotify.Backend"] 
   path = src/Spotify.Backend
   url = https://github.com/razrez/db_web_api.git
