@@ -22,11 +22,13 @@ public class MessageController : BaseController
     public async Task<IActionResult> GetHistory(
         int offset,
         int limit,
+        string room,
         CancellationToken cancellationToken)
     {
         var messages = await _messageService.GetMessageHistory(
             offset,
-            limit, 
+            limit,
+            room,
             cancellationToken);
         
         return Ok(messages);

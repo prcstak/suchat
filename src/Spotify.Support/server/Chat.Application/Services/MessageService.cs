@@ -32,16 +32,18 @@ public class MessageService : IMessageService
         return message;
     }
 
-    public async Task<GetMessagesList> GetMessageHistory(int offset, int limit,
+    public async Task<GetMessagesList> GetMessageHistory(int offset, int limit, string room,
         CancellationToken cancellationToken)
     {
         var messages = await _context.Messages
             .AsNoTracking()
+            .Where(message => message.Room == room)
             .OrderByDescending(t => t.Created)
             .Skip(offset)
             .Take(limit)
             .ToListAsync(cancellationToken);
-        Console.WriteLine(messages.FirstOrDefault());
+        
+        
         return GetMessagesList.MapFrom(messages);
     }
 }
