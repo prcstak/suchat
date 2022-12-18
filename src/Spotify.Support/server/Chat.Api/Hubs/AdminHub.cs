@@ -35,20 +35,4 @@ public class AdminHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, username);
         await Clients.Group(username).SendAsync("OnAdminLeave", "admin has left the chat");
     }
-
-    public override async Task<Task> OnDisconnectedAsync(Exception? exception)
-    {
-        var leftRoom = _rooms.Leave(Context.ConnectionId);
-        
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, "admin");
-
-        if (!leftRoom.Value.IsAdmin)
-            _rooms.Close(leftRoom.Value.Username);
-
-        await Clients
-            .Groups(leftRoom.Value.Username)
-            .SendAsync("UserLeft", $"admin has disconnected from the chat");
-        
-        return base.OnDisconnectedAsync(exception);
-    }
 }
