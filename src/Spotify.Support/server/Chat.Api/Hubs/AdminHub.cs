@@ -28,11 +28,13 @@ public class AdminHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, username);
         await Clients.Group(username).SendAsync("OnAdminJoin", "admin has joined the chat");
+        _rooms.Join(username, Context.ConnectionId, true);
     }
 
     public async Task LeaveUserRoom(string username)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, username);
         await Clients.Group(username).SendAsync("OnAdminLeave", "admin has left the chat");
+        _rooms.Leave(Context.ConnectionId);
     }
 }

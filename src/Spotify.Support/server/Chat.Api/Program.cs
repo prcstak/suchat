@@ -2,6 +2,7 @@ using Chat.Api.Consumers;
 using Chat.Api.Extensions;
 using Chat.Api.Hubs;
 using Chat.Api.Producer;
+using Chat.Api.Utils.Rooms;
 using Chat.Infrastructure;
 using Chat.Application;
 using Chat.Cache;
@@ -22,6 +23,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<IMessageProducer, MessageProducer>();
 builder.Services.AddHostedService<MediaUploadedDispatch>();
+builder.Services.AddSingleton<Rooms>();
 
 builder.Services.AddAccessSecurity(builder.Configuration);
 
@@ -44,4 +46,5 @@ app.UseCors("All");
 app.MapControllers();
 
 app.MapHub<ChatHub>("/Chat");
+app.MapHub<AdminHub>("/Admin");
 app.Run();
