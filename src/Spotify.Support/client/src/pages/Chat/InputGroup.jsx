@@ -83,10 +83,10 @@ function InputGroup({user, connection}) {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
-                params: {"filename": fileId, "requestId": id}
+                params: {"filename": fileId, "requestId": id, "room": urlParams.get('room')}
             });
             let metaPost =  $api.post('/Meta', {},{
-                params: {"metaJson": metadata, "filename": fileId,"requestId": id, "author": user}
+                params: {"metaJson": metadata, "filename": fileId,"requestId": id, "author": user, "room": urlParams.get('room')}
             });
 
             await Promise.all([filePost, metaPost]);
