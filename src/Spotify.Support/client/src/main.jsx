@@ -2,7 +2,6 @@ import React, {createContext} from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import UserStore from "./stores/UserStore.js";
-import {BrowserRouter, Route, Router} from "react-router-dom";
 
 const userStore = new UserStore();
 export const Context = createContext({
@@ -12,9 +11,7 @@ export const Context = createContext({
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <Context.Provider value={{userStore}}>
-            <BrowserRouter>
-                    <App/>
-            </BrowserRouter>
+            <App/>
         </Context.Provider>
     </React.StrictMode>
 )

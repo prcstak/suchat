@@ -8,6 +8,7 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
     const [limit, setLimit] = useState(10);
     const latestChat = useRef(null);
     const bottom = useRef(null);
+    const urlParams = new URLSearchParams(window.location.search);
 
     latestChat.current = chatHistory;
 
@@ -15,6 +16,7 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
         if (connection) {
             connection.start()
                 .then(_ => {
+                    connection.invoke("JoinRoom", urlParams.get("room"), connection.connectionId, user === "admin").then();
                     console.log('Connected!');
                     onReceiveMessage();
                     onReceiveFile();
@@ -31,7 +33,7 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
     const handleScroll = event => {
         if (event.currentTarget.scrollTop === 0) {
             const updatedChat = [...latestChat.current];
-            api.post(`Message/history?offset=${offset}&limit=${limit}`).then((result) => {
+            api.post(`Message/history?offset=${offset}&limit=${limit}&room=${urlParams.get("room")}`).then((result) => {
                 if (result.data.messages.length !== 0) {
                     let count = result.data.messages.length;
                     result.data['messages'].map((mes) => {
@@ -52,7 +54,7 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
 
     const getHistory = () => {
         const updatedChat = [...latestChat.current];
-        api.post(`Message/history?offset=${offset}&limit=${limit}`).then((result) => {
+        api.post(`Message/history?offset=${offset}&limit=${limit}&room=${urlParams.get("room")}`).then((result) => {
             if (result.data.messages.length !== 0) {
                 result.data['messages'].map((mes) => {
                     console.log(mes)
@@ -92,14 +94,19 @@ const ChatHistory = ({chatHistory, setChatHistory, user, connection}) => {
         connection.on('ReceiveFile', (u, m, t) => {
             let link = "http://localhost:8000/files-persistent/" + m
             const updatedChat = [...latestChat.current];
-            updatedChat.push({message: <a href={link} target="_blank">{m}</a>, timestamp: t, isMine: user === u, user: u});
+            updatedChat.push({
+                message: <a href={link} target="_blank">{m}</a>,
+                timestamp: t,
+                isMine: user === u,
+                user: u
+            });
             setChatHistory(updatedChat);
         })
     };
 
     return (
         <Card onScroll={handleScroll} className="hideScroll" style={{
-            height: "92vh", overflowY: "auto", display: "flex",
+            height: "92vh", overflowY: "auto", display: "flex", backgroundColor: "#424242"
         }}>
             {chatHistory.reverse().map((mes, index) => {
                 return <Message

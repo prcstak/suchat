@@ -17,6 +17,7 @@ function InputGroup({user, connection}) {
     const [show, setShow] = useState(false);
     const [metadata, setMetadata] = useState({});
     const [formFields, setFormFields] = useState([]);
+    const urlParams = new URLSearchParams(window.location.search);
 
     const handleClose = async ()  => {
         setShow(false);
@@ -68,7 +69,7 @@ function InputGroup({user, connection}) {
             user: user,
             message: textInput
         };
-        await connection.send('SendMessage', chatMessage.user, chatMessage.message);
+        await connection.send('SendMessage', chatMessage.user, chatMessage.message, urlParams.get("room"));
         setTextInput('');
     }
 
@@ -111,7 +112,6 @@ function InputGroup({user, connection}) {
                 <Modal.Title>File metadata</Modal.Title>
             </Modal.Header>
             {
-
                     formFields.map(field => {
                         return <div key={field}>
                             <Modal.Body>
@@ -149,7 +149,7 @@ function InputGroup({user, connection}) {
                         onChange={e => setFilesInput(e.target.files)}
                     />
             }
-            <Button variant="info" onClick={_ => setInputType()}>
+            <Button variant="outline-success" onClick={_ => setInputType()}>
                 File/Message
             </Button>
             <Button variant="success"

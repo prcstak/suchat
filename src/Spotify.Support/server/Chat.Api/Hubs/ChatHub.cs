@@ -1,4 +1,5 @@
-﻿using Chat.Api.Producer;
+﻿using System.Text.Json;
+using Chat.Api.Producer;
 using Chat.Api.Utils.Rooms;
 using Chat.Common.Events;
 using Microsoft.AspNetCore.SignalR;
@@ -29,9 +30,9 @@ public class ChatHub : Hub
 
     public async Task JoinRoom(string username, string connectionId, bool isAdmin)
     {
-        _rooms.Join(username, connectionId, isAdmin);
+        _rooms.Join(username, Context.ConnectionId, isAdmin);
         await Groups.AddToGroupAsync(Context.ConnectionId, username);
-        await _adminHub.Clients.All.SendAsync("RoomAmountChanged", _rooms.GetAllWaiting());
+        await _adminHub.Clients.All.SendAsync("RoomAmountChanged", JsonSerializer.Serialize(_rooms.GetAllWaiting()));
     }
 
     public async Task LeaveRoom()
@@ -43,7 +44,7 @@ public class ChatHub : Hub
         if (!leftRoom.Value.IsAdmin)
         {
             _rooms.Close(leftRoom.Value.Username);
-            await _adminHub.Clients.All.SendAsync("RoomAmountChanged", _rooms.GetAllWaiting());
+            await _adminHub.Clients.All.SendAsync("RoomAmountChanged", JsonSerializer.Serialize(_rooms.GetAllWaiting()));
         }
 
         await Clients
@@ -55,7 +56,7 @@ public class ChatHub : Hub
     {
         _rooms.Close(username);
         await Clients.Group(username).SendAsync("RoomClosed", $"Chat with {username} was closed");
-        await _adminHub.Clients.All.SendAsync("RoomAmountChanged", _rooms.GetAllWaiting());
+        await _adminHub.Clients.All.SendAsync("RoomAmountChanged", JsonSerializer.Serialize(_rooms.GetAllWaiting()));
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

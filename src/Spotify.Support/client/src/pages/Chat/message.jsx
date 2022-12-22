@@ -15,7 +15,7 @@ const Message = ({user, isMine, message, timestamp}) => {
 
     return (
         <div style={{
-            backgroundColor: isMine ? "lightblue" : "wheat",
+            backgroundColor: isMine ? "#1DB954" : "white",
             borderRadius: isMine ? "15px 15px 3px 15px" : "3px 15px 15px 15px",
             padding: 10,
             margin: isMine ? "2% 2% 5% 40%" : "2% 40% 5% 2%"
